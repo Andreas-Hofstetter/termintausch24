@@ -1,22 +1,27 @@
 <template>
   <!-- eslint-disable -->
-  <div class="video-background">
-    <div class="animated-background"></div>
-  </div>
-
-  <nav>
+  <nav class="nav1">
     <router-link to="/">Home</router-link>
-    <router-link to="/anbieter">Anbieter</router-link>
-    <div @click="loginUser">Login</div>
+    <router-link to="/gekauft">Gekauft</router-link>
+    <router-link to="/verkauft">Verkauft</router-link>
+    <router-link to="/about">About</router-link>
+    <router-link to="/impressum">Impressum</router-link>
+    <!-- <router-link to="/datenschutz">Datenschutz</router-link> -->
   </nav>
   <router-view/>
 </template>
-<script>/* eslint-disable */
-import { login } from '@/main';
+<script>
+/* eslint-disable */
+import { login,auth,logout } from '@/main';
   export default{
   data(){
     return{
       modal:null
+    }
+  },
+  computed: {
+    loggedIn1: function() {
+      return auth
     }
   },
   methods:{
@@ -28,7 +33,7 @@ import { login } from '@/main';
       this.modal="dE"
     },
     loginUser(){
-      login()
+      login();
     }
   }
 }
@@ -54,6 +59,12 @@ nav a {
   text-decoration: none;
   font-weight: bold;
   color: #2c3e50;
+}
+.likeA{
+  text-decoration: none;
+  font-weight: bold;
+  color: #2c3e50;
+  cursor: pointer;
 }
 
 nav a.router-link-exact-active {
