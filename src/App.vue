@@ -8,15 +8,17 @@
     <router-link to="/impressum">Impressum</router-link>
     <!-- <router-link to="/datenschutz">Datenschutz</router-link> -->
   </nav>
+  <div v-if="testModus" class="btn btn-2" :onClick="updateAllParams">Testbutton</div>
   <router-view/>
 </template>
 <script>
 /* eslint-disable */
-import { login,auth,logout } from '@/main';
+import { login,auth,logout, updateAllParams } from '@/main';
   export default{
   data(){
     return{
-      modal:null
+      modal:null,
+      testModus:false
     }
   },
   computed: {
@@ -34,6 +36,9 @@ import { login,auth,logout } from '@/main';
     },
     loginUser(){
       login();
+    },
+    updateAllParams(){
+      updateAllParams("anbieter",{"id":"J2","name":"testanbieter1"},"angebote");
     }
   }
 }

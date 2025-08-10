@@ -14,9 +14,6 @@
   </div>
   <BieteView v-if="!suche"/>
   <SucheView v-if="suche"/>
-  <div class="home">
-    
-  </div>
 </template>
 
 <script>

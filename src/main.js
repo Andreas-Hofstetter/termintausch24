@@ -8,7 +8,7 @@ import { firebaseConfig } from './firebase-config.js';
 import { initializeApp } from 'firebase/app'
 import {getDownloadURL, getStorage, listAll, ref,uploadBytes} from "firebase/storage"
 import { GoogleAuthProvider,getAuth, signInWithPopup, onAuthStateChanged, setPersistence, browserLocalPersistence, browserSessionPersistence} from "firebase/auth";
-import { getFirestore,arrayUnion,doc,getDoc, addDoc,setDoc, collection, getDocs, FieldPath, query, where, GeoPoint, orderBy,updateDoc, deleteDoc  } from 'firebase/firestore'///lite';
+import { getFirestore,arrayUnion,arrayRemove,doc,getDoc, addDoc,setDoc, collection, getDocs, FieldPath, query, where, GeoPoint, orderBy,updateDoc, deleteDoc  } from 'firebase/firestore'///lite';
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 
@@ -80,7 +80,8 @@ export async function getData(maxPrice,minPrice,region,category,date1,time1,date
   let constraints = [
     where("price", "<=", parseFloat(maxPrice)),
     where("price", ">=", parseFloat(minPrice)),
-    where("startDate","<=",date1),
+    where("startTimestamp", ">=", new Date(`${date1}T${time1}`)),
+    where("startTimestamp", "<=", new Date(`${date2}T${time2}`)),
     orderBy("price")
   ];
   if (region !== "Alle") {
@@ -114,6 +115,17 @@ export async function getWarenkorb(){
   }else{
     console.log("user (sollte null sein)"+user)
     return null
+  }
+}
+export async function deleteFromWarenkorb(userId,angebot){
+  const wkRef = doc(db, "warenkorb", userId);
+  try {
+    await updateDoc(wkRef, {
+      angebote: arrayRemove(angebot)
+    });
+    console.log("Angebot entfernt:", angebot);
+  } catch (e) {
+    console.error("Fehler beim Entfernen:", e);
   }
 }
 export async function getVerkauft(){
@@ -162,9 +174,53 @@ export async function saveOrder(angebot,anbieterId, angebotId){ //TODO rewrite
   }
   
 }
-
-//Hilfsfunktionen 
-export async function saveParam(field){
+export async function commentAnbieter(anbieterId,comment){
+  const aRef= doc(db,"anbieter",anbieterId)
+  let user= getAuth().currentUser
+  if(!user){
+    console.log("no user")
+    try{ await login()}catch(e){alert("login fehlgeschlagen!");console.log(e)}
+    user= getAuth().currentUser
+  }
+  try{ 
+      await updateDoc(aRef,{
+        comments: arrayUnion({"text":comment,"uid":user.uid,"uname":user.displayName})
+      })}catch(e){alert(e)}
   
 }
+
+//Hilfsfunktionen 
+export async function updateAllParams(newParam,newParamWert,collectionName,dId){
+  const colRef=collection(db,collectionName)
+  const snapshot = await getDocs(colRef);
+
+  const updates = [];
+
+  snapshot.forEach((docSnap) => {
+    const docRef = doc(db, collectionName, docSnap.id);
+    const updatePromise = updateDoc(docRef, {
+      [newParam]: newParamWert
+    });
+    updates.push(updatePromise);
+  });
+
+  try {
+    await Promise.all(updates);
+    console.log(`Alle Dokumente in '${collectionName}' wurden mit ${newParam} = ${newParamWert} aktualisiert.`);
+  } catch (e) {
+    console.error("Fehler beim Aktualisieren:", e);
+  }
+}
+export async function getProfil(aId){
+  const aRef= doc(db,"anbieter",aId)
+  const snapshot = await getDoc(aRef);
+  console.log(aId,snapshot)
+  return snapshot.data()
+}
+export async function writeProfil(aid,profil){
+  const aRef=doc(db,"anbieter",aid)
+  try{await setDoc(aRef,profil)}catch(e){console.log(e)}
+}
+
+
 createApp(App).use(router).mount('#app')

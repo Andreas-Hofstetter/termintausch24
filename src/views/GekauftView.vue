@@ -5,7 +5,7 @@
         <div class="modeChosen filtern" @click="getWk">Login</div>
     </div>
     <div v-if="this.loggedIn" class="angeboteContainer">
-        <Contract v-for="(a,key) in angebote" :key=key :a="a"/>
+        <Contract v-for="(a,key) in angebote" :key=key :a="a" :inView="1"/>
     </div>
 </template>
 
@@ -16,12 +16,11 @@ import { getAuth } from "firebase/auth";
 import {getWarenkorb,login} from "../main.js";
 import Contract from "@/components/Contract.vue";
 export default {
-name: 'WarekorbView',
 components:{
     Contract
 },data(){
     return{
-        angebote: [{"title":"test"}],
+        angebote: [],
         loggedIn:false
     }
 },methods:{

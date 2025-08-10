@@ -5,6 +5,8 @@
       <div>Hauptsitz: {{ this.anbieter.hauptsitz }}</div>
       <div>Email: {{ this.anbieter.email }}</div>
       <div>Telefonnummer: {{ this.anbieter.telefon }}</div>
+      <br>
+      <input v-model="this.comment" placeholder="Hier Kommentieren"><span class="btn" @click="this.commentAnbieter()">Senden</span>
       <div class="commentContainer">
         <Comment v-for="(c,ckey) in this.anbieter.comments" :key="ckey" :comment="c"/>
       </div>
@@ -12,7 +14,7 @@
   </template>
 <script>
 /* eslint-disable */
-  import {getAnbieter,login} from '@/main';
+  import {commentAnbieter, getAnbieter,login} from '@/main';
   import {getAuth} from "firebase/auth";
   import CommentTemplate from '@/components/Comment.vue';
   import router from '@/router';
@@ -26,6 +28,7 @@ import Comment from '@/components/Comment.vue';
     data(){
       return{
         anbieter:null,
+        comment:null,
         anbieterId: "hoppla! Hier ist etwas schiefgelaufen",
         anbieterName:"Testanbieter"
       }
@@ -43,6 +46,9 @@ import Comment from '@/components/Comment.vue';
       },fetchData(){ //??????
         console.log("fetchData")
         this.anbieterId=this.$route.params.anbieterId
+      },async commentAnbieter(){
+        await commentAnbieter(this.anbieterId,this.comment)
+        this.comment=""
       }
     }, watch:{
         "$route": "fetchData" //??? also why watch ?

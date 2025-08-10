@@ -1,6 +1,10 @@
 
 .nav1{
   width: 50%;
+  
+}
+.withBackground{
+  background-image: url("https://cdn.pixabay.com/photo/2015/04/24/11/29/background-737624_1280.jpg");
 }
 .nav1>*{
   padding: 2px;
@@ -72,9 +76,7 @@
   border-radius: 10%;
 }
 /* for suche/biete switch */
-.modeSwitch{
-  /* padding: 20px; */
-}
+
 .modeSwitch > *{
   cursor: pointer;
   padding: 5px;
@@ -117,13 +119,12 @@
   overflow: auto;
   border: 1px solid #111827 ;
   border-radius: 7px;
-  /* background-color: rgba(255, 255, 255, 0.745); */
+  background-color: rgba(248, 239, 239, 0.745);
 }
 
 
 /* related to search bar */
 .cnt{
-    padding-top: 30px;
     display: flex;
   justify-content: center;
   align-items: center; 
@@ -238,8 +239,10 @@ margin: 0 auto;
   margin: 0;
 }
 .commentContainer{
-  display: flex;
+  display:grid;
+  grid-template-columns:repeat(auto-fit, minmax(210px,1fr));
   justify-content: center;
+  width: 100%;
 }
 .comment{
   padding: 5px;
@@ -249,11 +252,18 @@ margin: 0 auto;
   border: 1px solid #111827 ;
   border-radius: 10px;
 }
-@media (max-width: 600px) {
+.close{
+  color: red;
+  cursor: pointer;
+}
+.icardContainer{
+  background-color: #6B7280;
+}
+@media (max-width: 700px) {
   .searchDiv {
     flex-direction: column;
   }
-
+  
   .searchDiv form {
     width: 100%;
   }
