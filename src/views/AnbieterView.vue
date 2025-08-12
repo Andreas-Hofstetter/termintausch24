@@ -34,14 +34,7 @@ import Comment from '@/components/Comment.vue';
       }
     },
     methods: {
-      async saveOrLog(a,b,c){ 
-        console.log(getAuth().currentUser)
-        console.log(a,b,c)
-        if(getAuth().currentUser===null){ await login()}
-        //  TODO:make angebote laden
-        await saveOrder(a,b,c)
-        router.push("/warenkorb")
-      }, async showAnbieter(){
+      async showAnbieter(){
         //getAnbieter()
       },fetchData(){ //??????
         console.log("fetchData")

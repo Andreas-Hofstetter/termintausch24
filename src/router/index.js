@@ -26,8 +26,8 @@ const routes = [
     component: () => import('../views/GekauftView.vue')
   },
   {
-    path: '/verkauft',
-    name: 'verkauft',
+    path: '/angeboten',
+    name: 'angeboten',
     component: () => import('../views/VerkauftView.vue')
   },
   {

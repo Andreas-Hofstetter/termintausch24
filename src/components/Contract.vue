@@ -23,13 +23,11 @@
         <div v-if="this.inView===1" class="mehr" @click="resell()">Weiterverkaufen</div>
         <!-- <slot></slot> -->
       </div>
-      
-      
     </div>
   </template>
 <script>
 /* eslint-disable */
-  import {saveOrder,login, writeAngebot,deleteFromWarenkorb} from '@/main';
+  import {saveOrder,login, writeAngebot, deleteAngebot} from '@/main';
   import {getAuth} from "firebase/auth";
   import "../assets/carticon.png"
   import router from '@/router';
@@ -38,10 +36,11 @@ import { RouterLink } from 'vue-router';
     name: 'AngebotTemplate',
     props: {
       a:Object,
-      inView:Number
+      inView:Number,
+      uid:String
     },
     mounted(){
-      console.log(this.a.startTimestamp)
+
     },
     data(){
       return{
@@ -60,10 +59,24 @@ import { RouterLink } from 'vue-router';
         //getAnbieter()
       },async resell(){
         const user=getAuth().currentUser
-        if(user){
-          await writeAngebot(this.a)
-          console.log("angebotWritten")
-          await deleteFromWarenkorb(user.uid,this.a)
+        const newPrice=prompt("verlangten Preis angeben")
+        const normalizedPrice = parseFloat(newPrice.replace(',', '.'));
+        if(normalizedPrice){
+          if (isNaN(normalizedPrice) || normalizedPrice <= 0) {
+          alert("Bitte geben Sie einen gültigen Preis ein.");
+          return;
+          }
+        }else{return}
+        if(user&&confirm(`Termin zu angegebenem Preis (${newPrice}€) verkaufen?"`)===true){
+          const angebot = { ...this.a, price: Number(normalizedPrice),reseller:this.uid};
+          if(!angebot.oldBesitzer){angebot.oldBesitzer=[]}
+          angebot.oldBesitzer.push(angebot.besitzer)
+          if(!angebot.oldPrices){angebot.oldPrices=[]}
+          angebot.oldPrices.push(normalizedPrice)
+          delete angebot.besitzer; 
+          await writeAngebot(angebot,"angeboten")
+          await deleteAngebot(angebot.id)
+          router.push("/")
         }
       }
     }

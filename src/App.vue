@@ -3,17 +3,17 @@
   <nav class="nav1">
     <router-link to="/">Home</router-link>
     <router-link to="/gekauft">Gekauft</router-link>
-    <router-link to="/verkauft">Verkauft</router-link>
+    <router-link to="/angeboten">Angeboten</router-link>
     <router-link to="/about">About</router-link>
     <router-link to="/impressum">Impressum</router-link>
     <!-- <router-link to="/datenschutz">Datenschutz</router-link> -->
   </nav>
-  <div v-if="testModus" class="btn btn-2" :onClick="updateAllParams">Testbutton</div>
+  <div v-if="testModus" class="btn btn-2" :onClick="update">Testbutton</div>
   <router-view/>
 </template>
 <script>
 /* eslint-disable */
-import { login,auth,logout, updateAllParams } from '@/main';
+import { login,auth,logout, updateAllParams, updateAStatus} from '@/main';
   export default{
   data(){
     return{
@@ -37,8 +37,8 @@ import { login,auth,logout, updateAllParams } from '@/main';
     loginUser(){
       login();
     },
-    updateAllParams(){
-      updateAllParams("anbieter",{"id":"J2","name":"testanbieter1"},"angebote");
+    update(){
+      updateAStatus()
     }
   }
 }

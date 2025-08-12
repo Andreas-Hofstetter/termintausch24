@@ -4,8 +4,10 @@
         <div>Nicht eingeloggt!</div>
         <div class="modeChosen filtern" @click="getWk">Login</div>
     </div>
+    <h3 v-if="this.loggedIn">Sie haben gekauft:</h3>
+    <div v-if="this.loggedIn&&this.angebote.length===0">Bisher nichts.</div>
     <div v-if="this.loggedIn" class="angeboteContainer">
-        <Contract v-for="(a,key) in angebote" :key=key :a="a" :inView="1"/>
+        <Contract v-for="(a,key) in angebote" :key=key :a="a" :inView="1" :uid="userId"/>
     </div>
 </template>
 
@@ -21,12 +23,14 @@ components:{
 },data(){
     return{
         angebote: [],
-        loggedIn:false
+        loggedIn:false,
+        userId:null
     }
 },methods:{
     async getWk(){ 
-        if(getAuth().currentUser==null){await login()}//Unclear: siehe VerkauftView
-            const a=await getWarenkorb() //update for newly added offer!
+        if(getAuth().currentUser==null){await login()}
+            const a=await getWarenkorb()
+            this.userId=getAuth().currentUser.uid
         if (a!=null){
             this.angebote=a;
             this.loggedIn=true

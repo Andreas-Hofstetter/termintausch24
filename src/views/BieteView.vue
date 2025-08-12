@@ -87,11 +87,11 @@ methods:{
             }else if (this.title.length>27) {alert("Titel zu lange!")} else{
                 if(confirm("Angebot verbindlich abgeben?")===false){return}
                 console.log(angebot)
-                try{await writeProfil(this.user.uid,profil)
-                    await writeAngebot(angebot).then((ref)=>{
+                try{await writeProfil(this.user.uid,profil)//TODO: nur write, falls Änderung
+                    const ref=await writeAngebot(angebot,"angeboten")
                     alert("\nAngebot abgegeben! Überprüfen Sie regelmäßig den Reiter 'Verkauft' (Navigationsleiste)");
+                    console.log(ref)
                     console.log("ref",ref.id)
-                })
                 
             }catch(e){alert(e)}
             }
