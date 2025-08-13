@@ -1,7 +1,7 @@
 <template>
 <!-- eslint-disable -->
     <div class="fullScreen" @click="this.fullScreen=null" v-if="fullScreen!=null">{{this.fullScreen}}</div>
-    <div  class="contract">
+    <div  class="contract" :class="{verkauft: a.status === 'verkauft'}">
       <!-- <img class="cardPic" :src="imageUrl" alt="img" /> -->
       <div class="contractTitle">{{ this.a.title }}</div>
       <p v-if="a.test" class="testangebot">Beispielangebot</p>
@@ -21,7 +21,7 @@
         <div class="mehr sideDiv" @click="this.fullScreen=this.a.more">Details</div>
         <img v-if="this.inView===0" class="btn btn-2" id="wk" @click="saveOrLog()" :src="require('../assets/carticon.png')"/>
         <div v-if="this.inView===1" class="mehr" @click="resell()">Weiterverkaufen</div>
-        <!-- <slot></slot> -->
+        <slot></slot>
       </div>
     </div>
   </template>
