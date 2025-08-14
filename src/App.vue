@@ -5,7 +5,7 @@
     <router-link to="/gekauft">Gekauft</router-link>
     <router-link to="/angeboten">Angeboten</router-link>
     <router-link to="/about">About</router-link>
-    <router-link to="/impressum">Impressum</router-link>
+    <router-link to="/kontakt">Kontakt</router-link>
     <!-- <router-link to="/datenschutz">Datenschutz</router-link> -->
   </nav>
   <div v-if="testModus" class="btn btn-2" :onClick="update">Testbutton</div>

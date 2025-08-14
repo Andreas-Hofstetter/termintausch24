@@ -1,13 +1,9 @@
 <!-- eslint-disable -->
 <template>
-    <h2>Impressum</h2>
+    <h2>Kontakt</h2>
     <p>Andreas Hofstetter Einzelkaufmann</p>
-    <p>Emil-Warburg-Weg 19</p>
-    <p>95447 Bayreuth</p>
     <p>Email: andreashofstetter12@gmail.com</p>
     <p>Telefon: 01743902112</p>
-    
-
 </template>
 
 <script>
