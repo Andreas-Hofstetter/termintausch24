@@ -19,11 +19,10 @@ const app = initializeApp(firebaseConfig);
 export const db= getFirestore(app)
 const storage= getStorage()
 const storageRef=ref(storage)
-export let auth=null
 const analytics = getAnalytics(app);
 
 export async function login(){
-  auth = getAuth(); 
+  const auth = getAuth(); 
   console.log(auth.currentUser)
   if(auth.currentUser===null){
     const provider = new GoogleAuthProvider();
