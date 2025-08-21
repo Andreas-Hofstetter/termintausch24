@@ -21,6 +21,11 @@ const storage= getStorage()
 const storageRef=ref(storage)
 const analytics = getAnalytics(app);
 
+export async function getUserId(){
+  const auth = getAuth();
+  const userId = auth.currentUser ? auth.currentUser.uid : null;
+  return userId;
+}
 export async function login(){
   const auth = getAuth(); 
   console.log(auth.currentUser)
@@ -46,7 +51,6 @@ export async function login(){
 //TODO: allgemeines Problem: angebote nicht aktuell=>gleichzeitige Order möglich!
 export async function writeAngebot(angebot,status){
   try {
-    const uId= getAuth().currentUser.uid
     angebot.status=status
     const docRef = await addDoc(collection(db, "angebote"), angebot);
     console.log("Document written with ID: ", docRef.id);
@@ -86,9 +90,8 @@ export async function getData(maxPrice,minPrice,region,category,date1,time1,date
   return angeboteDaten;
 }
 export async function getWarenkorb(){
-  const user = getAuth().currentUser
-  if(user!=null){
-    const userId= user.uid
+  const userId= getUserId()
+  if(userId!=null){
     const angeboteArr=[]
     try{
       const q = query(
@@ -109,9 +112,8 @@ export async function getWarenkorb(){
   }
 }
 export async function getVerkauft1(){
-  const user = getAuth().currentUser
-  if(user!=null){
-    const userId= user.uid
+  const userId= getUserId()
+  if(userId!=null){
     const angeboteArr=[]
     try{
       const q = query(
@@ -131,9 +133,8 @@ export async function getVerkauft1(){
   }
 }
 export async function getVerkauft2(){
-  const user = getAuth().currentUser
-  if(user!=null){
-    const userId= user.uid
+  const userId= getUserId()
+  if(userId!=null){
     const angeboteArr=[]
     try{
       const q = query(
@@ -159,7 +160,8 @@ export async function getAnbieter(anbId){
   }catch(e){alert(e)}
 }
 export async function saveOrder(angebot,anbieterId, angebotId){ //TODO rewrite
-  const userId = getAuth().currentUser.uid
+  const userId = getUserId()
+  if(!userId){
   const aDoc=doc(db,"angebote",angebotId)
   try{
     await changeAngebotStatus(angebotId,"verkauft")
@@ -170,7 +172,7 @@ export async function saveOrder(angebot,anbieterId, angebotId){ //TODO rewrite
     alert("Fehler beim Speichern")
     console.log(e)
   }
-  
+  }
 }
 export async function commentAnbieter(anbieterId,comment){
   const aRef= doc(db,"anbieter",anbieterId)
