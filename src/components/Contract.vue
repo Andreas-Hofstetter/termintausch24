@@ -18,9 +18,9 @@
       <div>{{ "Region: "+a.region }}</div>
       <div>{{ "Kategorie: "+a.category }}</div>
       <div>
-        <div class="mehr sideDiv" @click="this.fullScreen=this.a.more">Details</div>
+        <button class="btn-details" @click="fullScreen = a.more">Details</button>
         <img v-if="this.inView===0" class="btn btn-2" id="wk" @click="saveOrLog()" :src="require('../assets/carticon.png')"/>
-        <div v-if="this.inView===1" class="mehr" @click="resell()">Weiterverkaufen</div>
+        <button v-if="this.inView===1" class="btn-details" @click="resell()">Weiterverkaufen</button>
         <slot></slot>
       </div>
     </div>

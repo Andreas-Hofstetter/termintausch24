@@ -13,9 +13,7 @@
 .msg{
   font-weight: bold;
 }
-.sideDiv{
-  float: left;
-}
+
 .empty{
   height: 3px;
 }
@@ -51,10 +49,7 @@
   touch-action: manipulation;
   width: auto;
 }
-.mehr{
-  cursor: pointer;
-  text-decoration: underline;
-}
+
 .contractTitle{
   font-weight: bold;
 }
@@ -276,5 +271,17 @@ margin: 0 auto;
 .verkauft{
   border: 2px solid rgb(53, 184, 143);
 }
+
+/* details button (minimal, neutral) */
+.btn-details{
+  background: transparent;
+  border: 1px solid rgba(99,102,241,0.12);
+  color: #374151;
+  padding: 6px 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+}
+.btn-details:hover{background: rgba(99,102,241,0.06)}
 
 
