@@ -21,7 +21,7 @@ const storage= getStorage()
 const storageRef=ref(storage)
 const analytics = getAnalytics(app);
 
-export async function getUserId(){
+export function getUserId(){
   const auth = getAuth();
   const userId = auth.currentUser ? auth.currentUser.uid : null;
   return userId;
@@ -45,7 +45,7 @@ export async function login(){
         alert("Willkommen, "+user.displayName)
         return auth.currentUser
         // IdP data available using getAdditionalUserInfo(result)
-    }).catch((err)=>{console.log("Testosaurus"+err)})
+    }).catch((err)=>{alert("Login fehlgeschlagen!");console.log(err)})
   }
 }
 //TODO: allgemeines Problem: angebote nicht aktuell=>gleichzeitige Order möglich!
