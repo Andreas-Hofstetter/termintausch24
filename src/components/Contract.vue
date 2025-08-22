@@ -4,7 +4,11 @@
     <div  class="contract" :class="{verkauft: a.status === 'verkauft'}">
       <!-- <img class="cardPic" :src="imageUrl" alt="img" /> -->
       <div class="contractTitle">{{ this.a.title }}</div>
-      <p v-if="a.test" class="testangebot">Beispielangebot</p>
+      <div :class="['category-pill', catKey]" title="Kategorie">
+        <component :is="catIcon" class="icon" v-if="catIcon" />
+        <span class="category-text">{{ a.category }}</span>
+      </div>
+  <p v-if="a.test" class="beispielangebot">Beispielangebot</p>
       <!-- <div style="display: flex; justify-content: space-between; width: 100%;"> -->
         <div>Preis(€): <span style="color: blue;font-weight: bold;">{{ this.a.price }}</span></div>
       <!-- </div> -->
