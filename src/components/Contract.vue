@@ -16,7 +16,10 @@
       <div v-if="this.a.privat">Privates Angebot</div>
       <div v-if="!this.a.privat">Geschäftliches Angebot</div>
       <div>{{ "Region: "+a.region }}</div>
-      <div>{{ "Kategorie: "+a.category }}</div>
+      <div :class="['category-pill', catKey]" title="Kategorie">
+        <component :is="catIcon" class="icon" v-if="catIcon" />
+        <span class="category-text">{{ a.category }}</span>
+      </div>
       <div>
         <button class="btn-details" @click="fullScreen = a.more">Details</button>
         <button v-if="this.inView===0" class="btn-details" @click="saveOrLog()">Kaufen</button>
@@ -32,8 +35,12 @@
   import "../assets/carticon.png"
   import router from '@/router';
 import { RouterLink } from 'vue-router';
+import { Calendar, Euro,Key, Repeat, ArrowRight, Info, Hammer, Key as LucideKey, Ticket, Utensils, Tag } from 'lucide-vue-next'
   export default {
     name: 'AngebotTemplate',
+    components:{
+  Calendar, Hammer, LucideKey, Key, Ticket, Utensils, Tag
+    },
     props: {
       a:Object,
       inView:Number,
@@ -46,6 +53,26 @@ import { RouterLink } from 'vue-router';
       return{
         fullScreen:null,
         imageUrl:"https://cdn.pixabay.com/photo/2015/05/17/13/04/olives-770968_1280.jpg"
+      }
+    },
+    computed: {
+      catKey(){
+        if(!this.a||!this.a.category) return 'sonstiges'
+        const c=this.a.category.toString().toLowerCase()
+        if(c.includes('handwerk')) return 'handwerk'
+        if(c.includes('mieten')||c.includes('leihen')) return 'mieten'
+        if(c.includes('event')) return 'events'
+        if(c.includes('gastronomie')) return 'gastronomie'
+        return 'sonstiges'
+      },
+      catIcon(){
+        switch(this.catKey){
+          case 'handwerk': return Hammer
+          case 'mieten': return Key
+          case 'events': return Ticket
+          case 'gastronomie': return Utensils
+          default: return Tag
+        }
       }
     },
     methods: {

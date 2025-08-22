@@ -112,7 +112,7 @@
   max-width: 300px;
   max-height: 260px;
   overflow: auto;
-  border: 1px solid #111827 ;
+  border: 1px solid #111827be ;
   border-radius: 7px;
   background-color: white;
 }
@@ -211,13 +211,7 @@ margin: 0 auto;
   color: #fff;
   padding: 10px;
 }
-#wk{
-  /* warenkorb */
-  float: right;
-  width: 30px;
-  border-radius: 10%;
-  right: 0;
-}
+
 .btn-2:hover {
   background: #2983f13a;
 }
@@ -283,5 +277,29 @@ margin: 0 auto;
   font-weight: 600;
 }
 .btn-details:hover{background: rgba(99,102,241,0.06)}
+
+/* category pill and icon */
+.category-pill{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  padding:4px 8px;
+  border-radius:999px;
+  background: #f3f4f6;
+  color:#374151;
+  font-size:0.9rem;
+}
+.category-pill .icon{
+  width:16px;
+  height:16px;
+  display:inline-block;
+}
+
+/* subtle, fitting colors per category */
+.category-pill.handwerk{ background:#eef2ff; color:#1e3a8a; border:1px solid rgba(30,58,138,0.06) }
+.category-pill.mieten{ background:#ecfdf5; color:#065f46; border:1px solid rgba(6,95,70,0.06) }
+.category-pill.events{ background:#fff1f2; color:#9f1239; border:1px solid rgba(159,18,57,0.06) }
+.category-pill.gastronomie{ background:#fff7ed; color:#92400e; border:1px solid rgba(146,64,14,0.06) }
+.category-pill.sonstiges{ background:#f8fafc; color:#334155; border:1px solid rgba(51,65,85,0.04) }
 
 
