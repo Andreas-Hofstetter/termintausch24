@@ -22,6 +22,7 @@
   height: 100%;
   top: 0;
   left: 0;
+  z-index: 1;
   position: fixed;
   background-color: #111827ee;
   color: aliceblue;
@@ -110,9 +111,10 @@
 .contract{
   padding: 2px;
   max-width: 300px;
-  max-height: 260px;
+  height: 260px;
   overflow: auto;
   border: 1px solid #111827be ;
+  position: relative;
   border-radius: 7px;
   background-color: white;
 }
@@ -232,6 +234,21 @@ margin: 0 auto;
   background-color: rgb(239, 135, 135);
   margin: 0;
 }
+
+/* badge over card */
+.beispielangebot{
+  position: absolute;
+  cursor: default;
+  bottom: 3px;
+  right: 8px;
+  background: linear-gradient(180deg,#ef44448d,#dc2626);
+  color: white;
+  padding: 4px 8px;
+  border-radius: 9px;
+  font-weight: 700;
+  font-size: 0.8rem;
+  box-shadow: 0 6px 14px rgba(0,0,0,0.12);
+}
 .commentContainer{
   display:grid;
   grid-template-columns:repeat(auto-fit, minmax(210px,1fr));
@@ -266,7 +283,7 @@ margin: 0 auto;
   border: 2px solid rgb(53, 184, 143);
 }
 
-/* details button (minimal, neutral) */
+/* details button */
 .btn-details{
   background: transparent;
   border: 1px solid rgba(99,102,241,0.12);
@@ -277,6 +294,14 @@ margin: 0 auto;
   font-weight: 600;
 }
 .btn-details:hover{background: rgba(99,102,241,0.06)}
+.btn-kaufen{
+  background: #5953c8;
+  color: #fff;
+}
+.btn-kaufen:hover{
+  background: #4338ca;
+  color: #fff;
+}
 
 /* category pill and icon */
 .category-pill{

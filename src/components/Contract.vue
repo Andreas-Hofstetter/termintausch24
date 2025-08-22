@@ -20,13 +20,9 @@
       <div v-if="this.a.privat">Privates Angebot</div>
       <div v-if="!this.a.privat">Geschäftliches Angebot</div>
       <div>{{ "Region: "+a.region }}</div>
-      <div :class="['category-pill', catKey]" title="Kategorie">
-        <component :is="catIcon" class="icon" v-if="catIcon" />
-        <span class="category-text">{{ a.category }}</span>
-      </div>
       <div>
         <button class="btn-details" @click="fullScreen = a.more">Details</button>
-        <button v-if="this.inView===0" class="btn-details" @click="saveOrLog()">Kaufen</button>
+        <button v-if="this.inView===0" class="btn-details btn-kaufen" @click="saveOrLog()">Kaufen</button>
         <button v-if="this.inView===1" class="btn-details" @click="resell()">Weiterverkaufen</button>
         <slot></slot>
       </div>
