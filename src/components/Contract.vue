@@ -19,7 +19,7 @@
       <div>{{ "Kategorie: "+a.category }}</div>
       <div>
         <button class="btn-details" @click="fullScreen = a.more">Details</button>
-        <img v-if="this.inView===0" class="btn btn-2" id="wk" @click="saveOrLog()" :src="require('../assets/carticon.png')"/>
+        <button v-if="this.inView===0" class="btn-details" @click="saveOrLog()">Kaufen</button>
         <button v-if="this.inView===1" class="btn-details" @click="resell()">Weiterverkaufen</button>
         <slot></slot>
       </div>
