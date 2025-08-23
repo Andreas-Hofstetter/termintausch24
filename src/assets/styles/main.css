@@ -127,10 +127,14 @@
   align-items: center; 
 }
 .searchDiv{
-  padding-top: 10px;
-    display: flex;
-  justify-content: center;
-  align-items: center; 
+  padding: 10px;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  flex-wrap: wrap; /* allow wrapping so inputs remain visible */
+  background: #fff;
+  border: 1px solid rgba(15,23,42,0.04);
+  border-radius: 8px;
 }
 .filtern{
   width: fit-content;
@@ -294,6 +298,19 @@ margin: 0 auto;
   font-weight: 600;
 }
 .btn-details:hover{background: rgba(99,102,241,0.06)}
+
+/* modal overlay for centered i-card */
+.modal-overlay{
+  position: fixed;
+  inset: 0;
+  background: rgba(2,6,23,0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 99;
+  padding: 20px;
+}
+.modal-center{ max-width: 720px; width:100%; }
 .btn-kaufen{
   background: #5953c8;
   color: #fff;

@@ -1,53 +1,84 @@
 
 <template>
-  <div class="close-box">
-    <button class="close-btn" @click="$emit('close')">×</button>
-    <div class="content">
-      <slot>{{ text }}</slot>
-    </div>
+  <div class="infocard">
+    <button class="close-btn" @click="$emit('close')" aria-label="close">×</button>
+
+    <header v-if="title" class="card-title">{{ title }}</header>
+
+    <section class="content">
+      <p>
+        {{ text }}
+      </p>
+    </section>
+
+    <footer class="card-actions">
+      <slot name="actions"></slot>
+    </footer>
   </div>
 </template>
 
 <script>
-//copied from Chatgpt; Not tested!!
 export default {
-  name: "CloseBox",
+  name: 'InfoCard',
+  emits: ['close'],
   props: {
-    text: {
-      type: String,
-      default: ""
-    }
+    title: { type: String, default: '' },
+    text: { type: String, default: '' }
   }
 }
 </script>
 
 <style scoped>
-.close-box {
+.infocard {
   position: relative;
-  display: inline-block;
-  padding: 12px 16px;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  background: white;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  display: inline-flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 360px;
+  background: #fff;
+  border: 1px solid rgba(15,23,42,0.06);
+  border-radius: 10px;
+  padding: 12px 14px;
+  box-shadow: 0 6px 18px rgba(2,6,23,0.06);
+  color: #0f172a;
 }
 
-.close-btn {
+.card-title{
+  font-weight: 700;
+  margin: 0 0 6px 0;
+  font-size: 1rem;
+}
+
+.content{ font-size: 0.95rem; line-height: 1.35; color: #374151; }
+
+.card-actions{
+  display:flex;
+  gap:8px;
+  margin-top:12px;
+  justify-content:flex-end;
+}
+
+.close-btn{
   position: absolute;
-  top: 4px;
-  right: 6px;
-  background: none;
+  top: 8px;
+  right: 8px;
+  background: transparent;
   border: none;
-  font-size: 16px;
+  font-size: 18px;
+  line-height: 1;
   cursor: pointer;
-  color: #666;
+  color: rgba(15,23,42,0.6);
+  padding: 4px;
+}
+.close-btn:hover{ color: rgba(15,23,42,0.95); }
+
+/* make action buttons visually separated when present */
+.card-actions ::slotted(button){
+  padding: 6px 10px;
+  border-radius: 8px;
+  border: 1px solid rgba(2,6,23,0.06);
+  background: #f8fafc;
+  cursor: pointer;
 }
 
-.close-btn:hover {
-  color: black;
-}
-
-.content {
-  font-size: 14px;
-}
 </style>

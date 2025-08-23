@@ -1,6 +1,10 @@
 <template>
 <!-- eslint-disable -->
-    <div class="fullScreen" @click="this.fullScreen=null" v-if="fullScreen!=null">{{this.fullScreen}}</div>
+    <i-card v-if="showDetails" :title="a.title" :text="a.more" @close="showDetails=false">
+      <template #actions>
+        <button class="btn-details" @click="showDetails=false">Schließen</button>
+      </template>
+    </i-card>
     <div  class="contract" :class="{verkauft: a.status === 'verkauft'}">
       <!-- <img class="cardPic" :src="imageUrl" alt="img" /> -->
       <div class="contractTitle">{{ this.a.title }}</div>
@@ -21,7 +25,7 @@
       <div v-if="!this.a.privat">Geschäftliches Angebot</div>
       <div>{{ "Region: "+a.region }}</div>
       <div>
-        <button class="btn-details" @click="fullScreen = a.more">Details</button>
+  <button class="btn-details" @click="showDetails = true">Details</button>
         <button v-if="this.inView===0" class="btn-details btn-kaufen" @click="saveOrLog()">Kaufen</button>
         <button v-if="this.inView===1" class="btn-details" @click="resell()">Weiterverkaufen</button>
         <slot></slot>
@@ -35,11 +39,13 @@
   import "../assets/carticon.png"
   import router from '@/router';
 import { RouterLink } from 'vue-router';
-import { Calendar, Euro,Key, Repeat, ArrowRight, Info, Hammer, Key as LucideKey, Ticket, Utensils, Tag } from 'lucide-vue-next'
+import ICard from './iCard.vue'
+import { Calendar, Euro, Repeat, ArrowRight, Info, Hammer, Key as LucideKey, Ticket, Utensils, Tag } from 'lucide-vue-next'
   export default {
     name: 'AngebotTemplate',
     components:{
-  Calendar, Hammer, LucideKey, Key, Ticket, Utensils, Tag
+      ICard,
+      Calendar, Hammer, LucideKey, Ticket, Utensils, Tag
     },
     props: {
       a:Object,
@@ -51,7 +57,7 @@ import { Calendar, Euro,Key, Repeat, ArrowRight, Info, Hammer, Key as LucideKey,
     },
     data(){
       return{
-        fullScreen:null,
+        showDetails:false,
         imageUrl:"https://cdn.pixabay.com/photo/2015/05/17/13/04/olives-770968_1280.jpg"
       }
     },
@@ -68,7 +74,7 @@ import { Calendar, Euro,Key, Repeat, ArrowRight, Info, Hammer, Key as LucideKey,
       catIcon(){
         switch(this.catKey){
           case 'handwerk': return Hammer
-          case 'mieten': return Key
+          case 'mieten': return LucideKey
           case 'events': return Ticket
           case 'gastronomie': return Utensils
           default: return Tag
