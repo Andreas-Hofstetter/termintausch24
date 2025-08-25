@@ -1,11 +1,10 @@
 <template>
 <!-- eslint-disable -->
   <!-- <img id="compName" :src="this.logo"/> -->
-  <div class="cnt">
-    <div class="modeSwitch">
-      <div @click="toggleSuche(true)" :class="{'modeChosen':suche}">Suche</div>
-       <!-- modeChosen wrong way around -->
-      <div @click="toggleSuche(false)" :class="{'modeChosen':!suche}">Biete</div>
+    <div class="cnt">
+    <div class="modeSwitch" role="tablist" aria-label="Suche oder Biete">
+      <button role="tab" @click="toggleSuche(true)" :class="{modeChosen: suche}">Suche</button>
+      <button role="tab" @click="toggleSuche(false)" :class="{modeChosen: !suche}">Biete</button>
     </div>
     <!-- <div class="search-bar">
       <input type="text" placeholder="Search..." class="search-input">

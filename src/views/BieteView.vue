@@ -31,7 +31,7 @@
     <br/><form><div style="display: inline-block;">Details: </div><input v-model="more" style="display: inline-block;"></form>
     <!-- <br/><form><div style="display: inline-block;">Optionen: </div><input v-model="opt" style="display: inline-block;"></form> -->
     <br/><form><div style="display: inline-block;">Privat (Wenn geschäftlich, Haken entfernen): </div><input type="checkbox" v-model="privat" style="display: inline-block;"></form>
-    <br/><div @click="createAngebot" class="btn btn-2">Angebot abgeben</div>
+    <br/><div @click="createAngebot" class="btn">Angebot abgeben</div>
 </div>
 </template>
 <script>

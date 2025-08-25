@@ -15,8 +15,8 @@
           {{ category }}
         </option>
       </select></form>
+      <div @click="filterAngebote" class="modeChosen filtern">Filtern</div>
   </div>
-  <div @click="filterAngebote" class="modeChosen filtern">Filtern</div>
   <div class="angeboteContainer">
     <Contract v-for="(a,key) in angebote" :key=key :a="a" :inView="0"/>
   </div>

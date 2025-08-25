@@ -1,17 +1,19 @@
 <template>
 <!-- eslint-disable -->
-    <i-card v-if="showDetails" :title="a.title" :text="a.more" @close="showDetails=false">
-      <template #actions>
-        <button class="btn-details" @click="showDetails=false">Schließen</button>
-      </template>
-    </i-card>
+    <div v-if="showDetails" class="modal-overlay">
+        <i-card :title="a.title" :text="a.more" @close="showDetails=false">
+          <template #actions>
+            <button class="btn-details" @click="showDetails=false">Schließen</button>
+          </template>
+        </i-card>
+    </div>
     <div  class="contract" :class="{verkauft: a.status === 'verkauft'}">
       <!-- <img class="cardPic" :src="imageUrl" alt="img" /> -->
       <div class="contractTitle">{{ this.a.title }}</div>
       <div :class="['category-pill', catKey]" title="Kategorie">
         <component :is="catIcon" class="icon" v-if="catIcon" />
         <span class="category-text">{{ a.category }}</span>
-      </div>
+    </div>
   <p v-if="a.test" class="beispielangebot">Beispielangebot</p>
       <!-- <div style="display: flex; justify-content: space-between; width: 100%;"> -->
         <div>Preis(€): <span style="color: blue;font-weight: bold;">{{ this.a.price }}</span></div>
@@ -26,7 +28,7 @@
       <div>{{ "Region: "+a.region }}</div>
       <div>
   <button class="btn-details" @click="showDetails = true">Details</button>
-        <button v-if="this.inView===0" class="btn-details btn-kaufen" @click="saveOrLog()">Kaufen</button>
+        <button v-if="this.inView===0" class="btn-kaufen" @click="saveOrLog()">Kaufen</button>
         <button v-if="this.inView===1" class="btn-details" @click="resell()">Weiterverkaufen</button>
         <slot></slot>
       </div>
