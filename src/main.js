@@ -161,7 +161,10 @@ export async function getAnbieter(anbId){
 }
 export async function saveOrder(angebot,anbieterId, angebotId){ //TODO rewrite
   const userId = getUserId()
-  if(!userId){
+  if (!userId) {
+    alert("Bitte loggen Sie sich zuerst ein!");
+    return;
+  }
   const aDoc=doc(db,"angebote",angebotId)
   try{
     await changeAngebotStatus(angebotId,"verkauft")
@@ -171,7 +174,6 @@ export async function saveOrder(angebot,anbieterId, angebotId){ //TODO rewrite
   }catch(e){
     alert("Fehler beim Speichern")
     console.log(e)
-  }
   }
 }
 export async function commentAnbieter(anbieterId,comment){
