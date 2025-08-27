@@ -8,7 +8,7 @@ import { firebaseConfig } from './firebase-config.js';
 import { initializeApp } from 'firebase/app'
 import {getDownloadURL, getStorage, listAll, ref,uploadBytes} from "firebase/storage"
 import { GoogleAuthProvider,getAuth, signInWithPopup, onAuthStateChanged, setPersistence, browserLocalPersistence, browserSessionPersistence} from "firebase/auth";
-import { getFirestore,arrayUnion,arrayRemove,doc,getDoc, addDoc,setDoc, collection, getDocs, FieldPath, query, where, GeoPoint, orderBy,updateDoc, deleteDoc  } from 'firebase/firestore'///lite';
+import { getFirestore,arrayUnion,onSnapshot, arrayRemove,doc,getDoc, addDoc,setDoc, collection, getDocs, FieldPath, query, where, GeoPoint, orderBy,updateDoc, deleteDoc  } from 'firebase/firestore'///lite';
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 
@@ -89,27 +89,37 @@ export async function getData(maxPrice,minPrice,region,category,date1,time1,date
     })
   return angeboteDaten;
 }
-export async function getWarenkorb(){
-  const userId= getUserId()
-  if(userId!=null){
-    const angeboteArr=[]
-    try{
-      const q = query(
-      collection(db, "angebote"),
-      where("status", "==", "verkauft"),
-      where("besitzer", "==", userId)
-    );
-    const querySnapshot = await getDocs(q);
-      querySnapshot.forEach((a)=>{
-        const dataWithId=a.data()
-        dataWithId.id=a.id
-        angeboteArr.push(dataWithId)
-      })
-      return angeboteArr
-    }catch(e){console.log(e)}
-  }else{
-    return null
+export function subscribeToWarenkorb(userId,callback){ //Echtzeit-Updates des Warenkorbs (Geschrieben von claude)
+
+  if (!userId) {
+    callback([]); // Leeres Array wenn kein User
+    return () => {}; // Dummy unsubscribe
   }
+    const q = query(
+    collection(db, "angebote"),
+    where("status", "==", "verkauft"),
+    where("besitzer", "==", userId)
+  );
+
+  // onSnapshot gibt automatisch eine unsubscribe-Funktion zurück
+  const unsubscribe = onSnapshot(q, 
+    (querySnapshot) => {
+      const angebote = [];
+      querySnapshot.forEach((doc) => {
+        const dataWithId = doc.data();
+        dataWithId.id = doc.id;
+        angebote.push(dataWithId);
+      });
+      
+      console.log("Warenkorb aktualisiert:", angebote.length, "Artikel");
+      callback(angebote); // Vue Component wird automatisch updated
+    },
+    (error) => {
+      console.error("Warenkorb subscription error:", error);
+      callback([]); // Bei Fehler leeres Array
+    }
+  );
+  return unsubscribe; 
 }
 export async function getVerkauft1(){
   const userId= getUserId()

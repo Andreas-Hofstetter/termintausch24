@@ -7,14 +7,14 @@
           </template>
         </i-card>
     </div>
-    <div  class="contract" :class="{verkauft: a.status === 'verkauft'}">
+    <div  class="contract" :class="{verkauft: a.status === 'verkauft' && (inView === 2)}">
       <!-- <img class="cardPic" :src="imageUrl" alt="img" /> -->
       <div class="contractTitle">{{ this.a.title }}</div>
       <div :class="['category-pill', catKey]" title="Kategorie">
         <component :is="catIcon" class="icon" v-if="catIcon" />
         <span class="category-text">{{ a.category }}</span>
-    </div>
-  <p v-if="a.test" class="beispielangebot">Beispielangebot</p>
+      </div>
+    <p v-if="a.test" class="beispielangebot">Beispielangebot</p>
       <!-- <div style="display: flex; justify-content: space-between; width: 100%;"> -->
         <div>Preis(€): <span style="color: blue;font-weight: bold;">{{ this.a.price }}</span></div>
       <!-- </div> -->
@@ -54,9 +54,6 @@ import { Calendar, Euro, Repeat, ArrowRight, Info, Hammer, Key as LucideKey, Tic
       inView:Number,
       uid:String
     },
-    mounted(){
-
-    },
     data(){
       return{
         showDetails:false,
@@ -90,8 +87,6 @@ import { Calendar, Euro, Repeat, ArrowRight, Info, Hammer, Key as LucideKey, Tic
         //  TODO:make angebote laden
         if(confirm("Termin zu angegebenem Preis kaufen?")===true){await saveOrder(this.a,this.a.creator,this.a.id)
         router.push("/gekauft")}
-      }, async showAnbieter(){
-        //getAnbieter()
       },async resell(){
         const user=getAuth().currentUser
         const newPrice=prompt("verlangten Preis angeben")

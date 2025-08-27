@@ -1,44 +1,168 @@
-<!-- eslint-disable -->
+
+<!-- GekauftView.vue - geschrieben von claude -->
 <template>
-    <div v-if="!this.loggedIn">
-        <div>Nicht eingeloggt!</div>
-        <div class="modeChosen filtern" @click="getWk">Login</div>
+    <!-- INITIAL LOADING: Firebase prüft noch Auth Status -->
+    <div v-if="authChecking" class="loading">
+        <div>Prüfe Login-Status...</div>
     </div>
-    <h3 v-if="this.loggedIn">Sie haben gekauft:</h3>
-    <div v-if="this.loggedIn&&this.angebote.length===0">Bisher nichts.</div>
-    <div v-if="this.loggedIn" class="angeboteContainer">
-        <Contract v-for="(a,key) in angebote" :key=key :a="a" :inView="1" :uid="userId"/>
+
+    <!-- USER NICHT EINGELOGGT -->
+    <div v-else-if="!loggedIn" class="login-prompt">
+        <div>Nicht eingeloggt!</div>
+        <button class="btn-login" @click="handleLogin" :disabled="loggingIn">
+            {{ loggingIn ? 'Wird eingeloggt...' : 'Login' }}
+        </button>
+    </div>
+
+    <!-- USER EINGELOGGT -->
+    <div v-else>
+        <h3>Sie haben gekauft:</h3>
+        
+        <!-- Loading Gekaufte Items -->
+        <div v-if="loading" class="loading">
+            Lade Ihre gekauften Termine...
+        </div>
+        
+        <!-- Error State -->
+        <div v-if="error" class="error">
+            {{ error }}
+            <button @click="retry" class="btn-retry">Erneut versuchen</button>
+        </div>
+        
+        <!-- Empty State -->
+        <div v-if="!loading && !error && angebote.length === 0" class="empty-state">
+            Bisher nichts gekauft.
+        </div>
+        
+        <!-- Content -->
+        <div v-if="!loading && !error && angebote.length > 0" class="angeboteContainer">
+            <Contract 
+                v-for="angebot in angebote" 
+                :key="angebot.id" 
+                :a="angebot" 
+                :inView="1" 
+                :uid="userId"
+            />
+        </div>
     </div>
 </template>
 
 <script>
-/* eslint-disable */
-import "../assets/styles/main.css";
-import { getAuth } from "firebase/auth";
-import {getWarenkorb,login} from "../main.js";
+import { getAuth, onAuthStateChanged } from "firebase/auth";
+import { subscribeToWarenkorb, login } from "../main.js";
 import Contract from "@/components/Contract.vue";
+
 export default {
-components:{
-    Contract
-},data(){
-    return{
-        angebote: [],
-        loggedIn:false,
-        userId:null
+    name: 'GekauftView',
+    components: {
+        Contract
+    },
+    data() {
+        return {
+            // Auth States
+            authChecking: true,    // Firebase prüft noch Auth Status
+            loggedIn: false,       // User Status bekannt
+            loggingIn: false,      // Login Process läuft
+            userId: null,
+            
+            // Data States  
+            angebote: [],
+            loading: false,        // Daten werden geladen
+            error: null,
+            
+            // Subscription
+            unsubscribeWarenkorb: null
+        }
+    },
+    mounted() {
+        this.initAuthListener();
+    },
+    beforeUnmount() {
+        this.cleanupSubscriptions();
+    },
+    methods: {
+        initAuthListener() {
+            const auth = getAuth();
+            
+            // Auth State Change Listener - läuft IMMER wenn sich Auth Status ändert
+            onAuthStateChanged(auth, (user) => {
+                console.log("Auth state changed:", user ? "logged in" : "logged out");
+                
+                // Auth Status ist jetzt bekannt
+                this.authChecking = false;
+                
+                if (user) {
+                    this.loggedIn = true;
+                    this.userId = user.uid;
+                    this.loggingIn = false;
+                    this.setupWarenkorbSubscription();
+                } else {
+                    this.loggedIn = false;
+                    this.userId = null;
+                    this.loggingIn = false;
+                    this.angebote = [];
+                    this.cleanupSubscriptions();
+                }
+            });
+        },
+
+        setupWarenkorbSubscription() {
+            // Cleanup alte Subscription
+            this.cleanupSubscriptions();
+            
+            this.loading = true;
+            this.error = null;
+
+            console.log("Setting up subscription for user:", this.userId);
+
+            // Realtime Subscription
+            this.unsubscribeWarenkorb = subscribeToWarenkorb(
+                this.userId,
+                (angebote) => {
+                    console.log("Warenkorb callback received:", angebote.length, "items");
+                    this.angebote = angebote;
+                    this.loading = false;
+                    this.error = null;
+                }
+            );
+        },
+
+        cleanupSubscriptions() {
+            if (this.unsubscribeWarenkorb) {
+                console.log("Cleaning up subscription");
+                this.unsubscribeWarenkorb();
+                this.unsubscribeWarenkorb = null;
+            }
+        },
+
+        async handleLogin() {
+            try {
+                this.loggingIn = true;
+                this.error = null;
+                
+                console.log("Starting login process...");
+                await login();
+                
+                // onAuthStateChanged wird automatisch getriggered
+                // Kein manuelles Setup nötig
+                
+            } catch (error) {
+                console.error("Login error:", error);
+                this.error = "Login fehlgeschlagen: " + error.message;
+                this.loggingIn = false;
+            }
+        },
+
+        retry() {
+            if (this.userId) {
+                this.setupWarenkorbSubscription();
+            } else {
+                // Wenn kein User, versuche erneut zu checken
+                this.authChecking = true;
+                this.initAuthListener();
+            }
+        }
     }
-},methods:{
-    async getWk(){ 
-        if(getAuth().currentUser==null){await login()}
-            const a=await getWarenkorb()
-            this.userId=getAuth().currentUser.uid
-        if (a!=null){
-            this.angebote=a;
-            this.loggedIn=true
-            console.log(this.angebote)
-        }else{alert("keine Angebote gefunden!")}
-    }
-},created(){
-    this.getWk()
-}
 }
 </script>
+

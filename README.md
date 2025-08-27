@@ -1,24 +1,7 @@
 # futures
 
-## Project setup
+## Firestore
 ```
-npm install
-```
-
-### Compiles and hot-reloads for development
-```
-npm run serve
+GekauftView und AnbieterView laden Daten reaktiv von Firestore herunter (Stand: 28.08.), der Rest einmalig
 ```
 
-### Compiles and minifies for production
-```
-npm run build
-```
-
-### Lints and fixes files
-```
-npm run lint
-```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).

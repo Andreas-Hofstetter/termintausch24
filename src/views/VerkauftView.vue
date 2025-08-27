@@ -8,15 +8,15 @@
     <h3>Erstellte Angebote (mit aktuellen Preisen):</h3>
     <div v-if="createdAngebote.length===0">Keine Angebote erstellt</div>
     <div v-if="this.loggedIn" class="angeboteContainer">
-        <Contract v-for="(a,key) in createdAngebote" :key=key :a="a" >
-            <div v-if="a.status==='verkauft'" class="verkTxt">Verkauft</div>
+        <Contract v-for="(a,key) in createdAngebote" :key=key :a="a" :inView="2">
+            <!-- <div v-if="a.status==='verkauft'" class="verkTxt" >Verkauft</div> -->
         </Contract>
     </div>
     <h3>Wieder angebotene Termine:</h3>
     <div v-if="resoldAngebote.length===0">Keine Angebote weiterverkauft</div>
     <div v-if="this.loggedIn" class="angeboteContainer">
-        <Contract v-for="(a,key) in resoldAngebote" :key=key :a="a">
-            <div v-if="a.status==='verkauft'" class="verkTxt">Verkauft</div>
+        <Contract v-for="(a,key) in resoldAngebote" :key=key :a="a" :inView="2">
+            <!-- <div v-if="a.status==='verkauft'" class="verkTxt">Verkauft</div> -->
         </Contract>
     </div>
 </template>
