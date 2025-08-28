@@ -1,6 +1,7 @@
 <template>
   <!-- eslint-disable -->
   <nav class="nav1">
+    <!-- <img src="/KalenderIcon copy.png" alt="Logo (lädt nicht)" class="tt24Icon"/> -->
     <router-link to="/">Home</router-link>
     <router-link to="/gekauft">Gekauft</router-link>
     <router-link to="/angeboten">Angeboten</router-link>
@@ -52,27 +53,8 @@ import { login,auth,logout, updateAllParams, updateAStatus} from '@/main';
   color: #2c3e50;
 }
 
-nav {
-  
-  width: min(20%,200px);
-  display: flex;
-  justify-content: space-between;
-  padding: 30px;
-}
 
-nav a {
-  text-decoration: none;
-  font-weight: bold;
-  color: #2c3e50;
-}
-.likeA{
-  text-decoration: none;
-  font-weight: bold;
-  color: #2c3e50;
-  cursor: pointer;
-}
 
-nav a.router-link-exact-active {
-  color: #210e2f
-}
+
+
 </style>

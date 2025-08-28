@@ -36,7 +36,7 @@
   </template>
 <script>
 /* eslint-disable */
-  import {saveOrder,login, writeAngebot, deleteAngebot} from '@/main';
+  import {saveOrder,login, writeAngebot, deleteAngebot, updateAngebot} from '@/main';
   import {getAuth} from "firebase/auth";
   import "../assets/carticon.png"
   import router from '@/router';
@@ -104,8 +104,7 @@ import { Calendar, Euro, Repeat, ArrowRight, Info, Hammer, Key as LucideKey, Tic
           if(!angebot.oldPrices){angebot.oldPrices=[]}
           angebot.oldPrices.push(normalizedPrice)
           delete angebot.besitzer; 
-          await writeAngebot(angebot,"angeboten")
-          await deleteAngebot(angebot.id)
+          await updateAngebot(this.a.id,angebot)
           router.push("/")
         }
       }

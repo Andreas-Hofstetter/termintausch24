@@ -224,6 +224,13 @@ async function changeAngebotStatus(aId,newStatus) {
     await updateDoc(aRef,{"status":newStatus})
   }catch(e){console.log(e)}
 }
+
+export async function updateAngebot(aId,angebot){
+  const aRef= doc(db,"angebote",aId)
+  try{
+    await updateDoc(aRef,angebot)
+  }catch(e){console.log(e)}
+}
 //Hilfsfunktionen 
 export async function updateAllParams(newParam,newParamWert,collectionName,dId){
   const colRef=collection(db,collectionName)

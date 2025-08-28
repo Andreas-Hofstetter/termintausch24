@@ -1,14 +1,36 @@
 
 .nav1{
   width: 50%;
+  gap: 10px;
+}
+nav {
+  width: min(20%,200px);
+  display: flex;
+  justify-content: space-between;
+  padding: 30px;
+}
+nav a {
+  text-decoration: none;
+  font-weight: bold;
+  color: #2c3e50;
+}
+nav a.router-link-exact-active {
+  color: var(--primary-600)
+}
+.tt24Icon{
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 50px;
+
 }
 .withBackground{
   background-image: url("https://cdn.pixabay.com/photo/2015/04/24/11/29/background-737624_1280.jpg");
 }
-.nav1>*{
+/* .nav1>*{
   padding: 2px;
   border: 1px solid #c692cd ;
-}
+} */
 .msg{
   font-weight: bold;
 }
@@ -208,7 +230,7 @@ margin: 0 auto;
 
 .commentContainer{
   display:grid;
-  grid-template-columns:repeat(auto-fit, minmax(300px,1fr));
+  grid-template-columns:repeat(auto-fit, minmax(350px,1fr));
   justify-content: center;
   width: 100%;
 }
@@ -567,6 +589,9 @@ body{
 
 /* Mobile responsive für comment section */
 @media (max-width: 640px) {
+    .nav1{
+      height: fit-content;
+    }
     .comment-section {
         gap: 6px;
         padding: 8px;
