@@ -208,14 +208,15 @@ margin: 0 auto;
 
 .commentContainer{
   display:grid;
-  grid-template-columns:repeat(auto-fit, minmax(210px,1fr));
+  grid-template-columns:repeat(auto-fit, minmax(300px,1fr));
   justify-content: center;
   width: 100%;
 }
 .comment{
+  overflow: auto;
   padding: 5px;
   margin: 20px;
-  max-width: 300px;
+  max-width: 400px;
   max-height: 260px;
   border: 1px solid #111827 ;
   border-radius: 10px;

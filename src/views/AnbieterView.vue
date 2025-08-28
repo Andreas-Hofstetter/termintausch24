@@ -124,9 +124,12 @@ export default {
 
         async submitComment() {
             if (!this.comment.trim()) return;
-            
             try {
                 this.commenting = true;
+                if(this.comment.length > 500) {
+                    alert('Kommentar zu lang (max. 500 Zeichen)');
+                    return;
+                }
                 await commentAnbieter(this.anbieterId, this.comment);
                 this.comment = '';
                 // Reload anbieter to show new comment
