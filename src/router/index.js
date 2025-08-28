@@ -21,14 +21,14 @@ const routes = [
     component: () => import('../views/KontaktView.vue')
   },
   {
-    path: '/gekauft',
-    name: 'gekauft',
-    component: () => import('../views/GekauftView.vue')
+    path: '/meins',
+    name: 'meins',
+    component: () => import('../views/MeinsView.vue')
   },
   {
-    path: '/angeboten',
-    name: 'angeboten',
-    component: () => import('../views/VerkauftView.vue')
+    path: '/rechtliches',
+    name: 'rechtliches',
+    component: () => import('../views/RechtlichesView.vue')
   },
   {
     path: '/:anbieterId',

@@ -3,9 +3,9 @@
   <nav class="nav1">
     <!-- <img src="/KalenderIcon copy.png" alt="Logo (lädt nicht)" class="tt24Icon"/> -->
     <router-link to="/">Home</router-link>
-    <router-link to="/gekauft">Gekauft</router-link>
-    <router-link to="/angeboten">Angeboten</router-link>
+    <router-link to="/meins">Meins</router-link>
     <router-link to="/about">About</router-link>
+    <router-link to="/rechtliches">Rechtliches</router-link>
     <router-link to="/kontakt">Kontakt</router-link>
     <!-- <router-link to="/datenschutz">Datenschutz</router-link> -->
   </nav>
