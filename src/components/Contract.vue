@@ -85,8 +85,10 @@ import { Calendar, Euro, Repeat, ArrowRight, Info, Hammer, Key as LucideKey, Tic
         console.log(this.a,this.a.creator,this.a.id)
         if(getAuth().currentUser===null){ await login()}
         //  TODO:make angebote laden
-        if(confirm("Termin zu angegebenem Preis kaufen?")===true){await saveOrder(this.a,this.a.creator,this.a.id)
-        router.push("/gekauft")}
+        if(confirm("Termin zu angegebenem Preis kaufen?")===true){
+          await saveOrder(this.a,this.a.creator,this.a.id)
+          router.push("/meins")
+        }
       },async resell(){
         const user=getAuth().currentUser
         const newPrice=prompt("verlangten Preis angeben")
@@ -104,8 +106,8 @@ import { Calendar, Euro, Repeat, ArrowRight, Info, Hammer, Key as LucideKey, Tic
           if(!angebot.oldPrices){angebot.oldPrices=[]}
           angebot.oldPrices.push(normalizedPrice)
           delete angebot.besitzer; 
+          angebot.status="angeboten"
           await updateAngebot(this.a.id,angebot)
-          router.push("/")
         }
       }
     }

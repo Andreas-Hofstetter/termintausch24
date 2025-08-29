@@ -13,7 +13,7 @@
     <h2>Allgemeine Geschäftsbedingungen (AGB)</h2>
     
     <h3>§1 Geltungsbereich</h3>
-    <p>Diese Allgemeinen Geschäftsbedingungen gelten für alle Verträge zwischen Andreas Hofstetter Einzelkaufmann (nachfolgend "Plattformbetreiber") und den Nutzern der Plattform TerminTausch24.</p>
+    <p>Diese allgemeinen Geschäftsbedingungen gelten für alle Verträge zwischen Andreas Hofstetter Einzelkaufmann (nachfolgend "Plattformbetreiber") und den Nutzern der Plattform TerminTausch24.</p>
     
     <h3>§2 Plattformzweck und Erlaubte Termine</h3>
     <p><strong>2.1</strong> TerminTausch24 ist ein digitaler Marktplatz für den Handel mit verfügbaren Terminen.</p>
@@ -34,6 +34,7 @@
     <h3>§4 Vertragsschluss und Vermittlung</h3>
     <p><strong>4.1</strong> Der Plattformbetreiber vermittelt ausschließlich zwischen den Nutzern. Der eigentliche Kaufvertrag kommt zwischen Käufer und Verkäufer zustande.</p>
     <p><strong>4.2</strong> Der Vertrag kommt durch die Bestätigung des Kaufs durch den Käufer und die Übertragung der Terminberechtigung zustande.</p>
+    <p><strong>4.3</strong> Die im jeweiligen Terminangebot unter „Details“ angegebenen Bedingungen (z. B. Region, Leistungsumfang, Einschränkungen) werden Bestandteil des Vertrags zwischen Anbieter und Erwerber. Die Leistungspflicht besteht nur im Rahmen dieser Bedingungen.</p>
     
     <h3>§5 Preise und Zahlungsbedingungen</h3>
     <p><strong>5.1</strong> Die Zahlung erfolgt direkt zwischen den Vertragsparteien.</p>
@@ -57,6 +58,7 @@
     <h3>§10 Schlussbestimmungen</h3>
     <p><strong>10.1</strong> Es gilt deutsches Recht.</p>
     <p><strong>10.2</strong> Bei Verbrauchern ist der Gerichtsstand der Wohnsitz des Verbrauchers, bei Unternehmern Bayreuth.</p>
+    <p><strong>10.3</strong> Der Plattformbetreiber behält sich vor, diese AGB mit Wirkung für die Zukunft anzupassen</p>
   </div>
 
   <!-- Datenschutz -->
@@ -118,8 +120,8 @@
     <h3>Angaben gemäß § 5 TMG</h3>
     <p>
       Andreas Hofstetter Einzelkaufmann<br>
-      Alfred Delp Straße <br>
-      [PLZ und Ort]<br>
+      Emil-Warburg-Weg 19<br>
+      95447 Bayreuth<br>
       Deutschland
     </p>
     
