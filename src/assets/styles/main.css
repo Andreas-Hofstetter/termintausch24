@@ -678,12 +678,3 @@ body{
   transform: none !important; 
 }
 /* ende der einheitlichen Styles von claude*/ 
-#bieteWrapper{
-    border-radius: 10px;
-    padding: 10px;
-    background-color: var(--bg);
-}
-#bieteWrapper .btn {
-  display: block;
-  margin: 5px auto 5px auto;
-}
