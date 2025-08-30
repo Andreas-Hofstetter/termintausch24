@@ -50,6 +50,7 @@
             <Comment v-for="(c,ckey) in anbieter.comments" :key="ckey" :comment="c"/>
         </div>
     </div>
+    <div v-if="errorMsg" class="error">{{ errorMsg }}</div>
 </template>
 
 <script>
@@ -75,7 +76,9 @@ export default {
             
             // Comment States
             comment: '',
-            commenting: false
+            commenting: false,
+
+            errorMsg:null
         }
     },
     mounted() {
@@ -116,8 +119,6 @@ export default {
                 this.loggingIn = true;
                 await login();
             } catch (error) {
-                console.error('Login error:', error);
-                alert('Login fehlgeschlagen');
                 this.loggingIn = false;
             }
         },
@@ -126,17 +127,17 @@ export default {
             if (!this.comment.trim()) return;
             try {
                 this.commenting = true;
-                if(this.comment.length > 500) {
-                    alert('Kommentar zu lang (max. 500 Zeichen)');
-                    return;
-                }
+                // if(this.comment.length > 500) {
+                //     this.errorMsg="Kommentar zu lang! Maximal 500 Zeichen."
+                //     return;
+                // }
                 await commentAnbieter(this.anbieterId, this.comment);
                 this.comment = '';
                 // Reload anbieter to show new comment
                 await this.loadAnbieter();
             } catch (error) {
                 console.error('Comment error:', error);
-                alert('Kommentar konnte nicht gespeichert werden');
+                this.errorMsg="Fehler beim Senden des Kommentars."
             } finally {
                 this.commenting = false;
             }

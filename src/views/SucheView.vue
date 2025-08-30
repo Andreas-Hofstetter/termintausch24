@@ -3,8 +3,8 @@
   <div class="searchDiv">
     <form><div style="display: inline-block;">ab: </div><input v-model="date" type="date"  style="display: inline-block;"><input  type="time" v-model="time" style="display: inline-block;"></form>
     <form><div style="display: inline-block;">bis: </div><input v-model="date2" type="date"  style="display: inline-block;"><input  type="time" v-model="time2" style="display: inline-block;"></form>
-    <form><div style="display: inline-block;">Niedrigster Preis: </div><input v-model="minPrice" style="display: inline-block;"></form>
-    <form><div style="display: inline-block;">Höchster Preis: </div><input v-model="maxPrice" style="display: inline-block;"></form>
+    <form><div style="display: inline-block;">Niedrigster Gesamtpreis: </div><input v-model="minPrice" style="display: inline-block;"></form>
+    <form><div style="display: inline-block;">Höchster Gesamtpreis: </div><input v-model="maxPrice" style="display: inline-block;"></form>
     <form><div style="display: inline-block;">Region: </div><select v-model="selectedRegion" style="display: inline-block;">
         <option v-for="region in this.regions" :key="region" :value="region">
           {{ region }}

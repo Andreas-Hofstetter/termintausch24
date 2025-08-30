@@ -15,8 +15,10 @@
         <span class="category-text">{{ a.category }}</span>
       </div>
     <p v-if="a.test" class="beispielangebot">Beispielangebot</p>
+    <p v-else class="beispielangebot">kein Beispielangebot</p>
       <!-- <div style="display: flex; justify-content: space-between; width: 100%;"> -->
-        <div>Preis(€): <span style="color: blue;font-weight: bold;">{{ this.a.price }}</span></div>
+        <div>Basispreis Leistung (€): <span style="color: blue;font-weight: bold;">{{ this.a.price }}</span></div>
+        <div>Preis Termin (€): <span style="color: blue;font-weight: bold;">{{ this.a.price }}</span></div>
       <!-- </div> -->
       <div v-if="this.a.startTimestamp">Start: {{ this.a.startTimestamp.toDate().toLocaleString()}} </div>
       <div>Dauer: {{ this.a.dauer }} Stunden</div>
@@ -28,8 +30,8 @@
       <div>{{ "Region: "+a.region }}</div>
       <div>
   <button class="btn-details" @click="showDetails = true">Details</button>
-        <button v-if="this.inView===0" class="btn-kaufen" @click="saveOrLog()">Kaufen</button>
-        <button v-if="this.inView===1" class="btn-details" @click="resell()">Weiterverkaufen</button>
+        <button v-if="this.inView===0" class="btn" @click="saveOrLog()">Kaufen</button>
+        <button v-if="this.inView===1" class="btn" @click="resell()">Weiterverkaufen</button>
         <slot></slot>
       </div>
     </div>

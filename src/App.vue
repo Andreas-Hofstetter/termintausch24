@@ -39,7 +39,9 @@ import { login,auth,logout, updateAllParams, updateAStatus} from '@/main';
       login();
     },
     update(){
-      updateAStatus()
+      // updateAllParams("basePrice",90,"angebote")
+      // updateAllParams("price",10,"angebote")
+      // updateAllParams("fullPrice",100,"angebote")
     }
   }
 }

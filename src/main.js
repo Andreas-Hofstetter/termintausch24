@@ -32,6 +32,7 @@ export async function login(){
   if(auth.currentUser===null){
     const provider = new GoogleAuthProvider();
     console.log(provider)
+    try{
     await setPersistence(auth,browserSessionPersistence)
     await signInWithPopup(auth,provider)
     .then((re)=>{
@@ -45,7 +46,7 @@ export async function login(){
         alert("Willkommen, "+user.displayName)
         return auth.currentUser
         // IdP data available using getAdditionalUserInfo(result)
-    }).catch((err)=>{alert("Login fehlgeschlagen!");console.log(err)})
+    })}catch(err){alert("Login fehlgeschlagen!");console.log(err)}
   }
 }
 //TODO: allgemeines Problem: angebote nicht aktuell=>gleichzeitige Order möglich!
@@ -56,6 +57,7 @@ export async function writeAngebot(angebot,status){
     console.log("Document written with ID: ", docRef.id);
     return docRef
   } catch (e) {
+    alert("Fehler beim Speichern")
     console.error("Error adding document: ", e);
   }
 } 
@@ -66,12 +68,12 @@ export async function getData(maxPrice,minPrice,region,category,date1,time1,date
   const angeboteCol=collection(db, "angebote");
   let angeboteQ=null;
   let constraints = [
-    where("price", "<=", parseFloat(maxPrice)),
-    where("price", ">=", parseFloat(minPrice)),
+    where("fullPrice", "<=", parseFloat(maxPrice)),
+    where("fullPrice", ">=", parseFloat(minPrice)),
     where("status","==","angeboten"),
     where("startTimestamp", ">=", new Date(`${date1}T${time1}`)),
     where("startTimestamp", "<=", new Date(`${date2}T${time2}`)),
-    orderBy("price")
+    orderBy("fullPrice","asc")
   ];
   if (region !== "Alle") {
     constraints.push(where("region", "==", region));
@@ -80,14 +82,16 @@ export async function getData(maxPrice,minPrice,region,category,date1,time1,date
     constraints.push(where("category", "==", category));
   }
   angeboteQ = query(angeboteCol,...constraints)
-  const angeboteSnapshot = await getDocs(angeboteQ);
-  let angeboteDaten=[]
-  angeboteSnapshot.forEach((doc)=>{
-    const dataWithId=doc.data()
-    dataWithId.id=doc.id
-        angeboteDaten.push(dataWithId)
-    })
-  return angeboteDaten;
+  try{
+    const angeboteSnapshot = await getDocs(angeboteQ);
+    let angeboteDaten=[]
+    angeboteSnapshot.forEach((doc)=>{
+      const dataWithId=doc.data()
+      dataWithId.id=doc.id
+          angeboteDaten.push(dataWithId)
+      })
+    return angeboteDaten;
+  }catch(e){alert(e);console.log(e)}
 }
 export function subscribeToWarenkorb(userId,callback){ //Echtzeit-Updates des Warenkorbs (Geschrieben von claude)
 
@@ -137,7 +141,9 @@ export async function getVerkauft1(){
         angeboteArr.push(dataWithId)
       })
       return angeboteArr
-    }catch(e){console.log(e)}
+    }catch(e){
+      alert("Fehler beim Laden der Termine")
+      console.log(e)}
   }else{
     return null
   }
@@ -157,7 +163,9 @@ export async function getVerkauft2(){
         angeboteArr.push(dataWithId)
       })
       return angeboteArr
-    }catch(e){console.log(e)}
+    }catch(e){
+      alert("Fehler beim Laden der Termine")
+      console.log(e)}
   }else{
     return null
   }
@@ -206,9 +214,24 @@ export async function getProfil(aId){
   console.log(aId,snapshot)
   return snapshot.data()
 }
-export async function writeProfil(aid,profil){
-  const aRef=doc(db,"anbieter",aid)
-  try{await setDoc(aRef,profil)}catch(e){console.log(e)}
+export async function writeProfil(aid, profil) {
+  const aRef = doc(db, "anbieter", aid);
+  
+  try {
+    // Check if document exists
+    const docSnap = await getDoc(aRef);
+    
+    if (docSnap.exists()) {
+      // Document exists - update with merge to preserve comments
+      await updateDoc(aRef, profil);
+    } else {
+      // Document doesn't exist - create new one
+      await setDoc(aRef, profil);
+    }
+  } catch (e) {
+    alert("Fehler beim Speichern des Profils");
+    console.log(e);
+  }
 }
 
 // async function addGekaufte(angebot,id,uid){
@@ -222,14 +245,17 @@ async function changeAngebotStatus(aId,newStatus) {
   const aRef= doc(db,"angebote",aId)
   try{
     await updateDoc(aRef,{"status":newStatus})
-  }catch(e){console.log(e)}
+  }catch(e){
+    alert("Fehler beim Ändern des Status")
+    console.log(e)}
 }
 
 export async function updateAngebot(aId,angebot){
   const aRef= doc(db,"angebote",aId)
   try{
     await updateDoc(aRef,angebot)
-  }catch(e){console.log(e)}
+  }catch(e){
+    console.log(e)}
 }
 //Hilfsfunktionen 
 export async function updateAllParams(newParam,newParamWert,collectionName,dId){

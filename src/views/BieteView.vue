@@ -2,7 +2,7 @@
 <!-- eslint-disable -->
 <p class="msg" v-if="user!=null">Hallo, {{ user.displayName }}!</p>
 <div style=" cursor: pointer;" @click="peClicked = !peClicked">
-  <span class="btn">{{ peClicked ? 'Profil ausblenden ▲' : 'Profil ergänzen ▼' }}</span>
+  <span class="btn">{{ peClicked ? 'Dienstleisterprofil ausblenden ▲' : 'Dienstleisterprofil ergänzen ▼' }}</span>
 </div>
 <div class="Profil" v-if="peClicked">
     <br/>
@@ -28,19 +28,13 @@
           {{ category }}
         </option>
     </select></form>
-    <br/><form><div>Basispreis der Dienstleistung (€): </div><input v-model="price" type="number" style="display: inline-block;"></form>
+    <br/><form><div>Basispreis der Dienstleistung (€): </div><input v-model="basePrice" type="number" style="display: inline-block;"></form>
     <br/><form><div>Preis des Termins (€): </div><input v-model="price" type="number" style="display: inline-block;"></form>
     <br/><form><div>Details: </div><textarea v-model="more" style="display: inline-block;" placeholder="Beschreibe dein Angebot..."></textarea></form>
     <!-- <br/><form><div style="display: inline-block;">Optionen: </div><input v-model="opt" style="display: inline-block;"></form> -->
     <br/><form><div>Privat (Wenn geschäftlich, Haken entfernen): </div><input type="checkbox" v-model="privat" style="display: inline-block;"></form>
-    <label class="checkbox-label">
-       <input type="checkbox" v-model="confirmTerms" />
-       <span>Ich bestätige, dass ich Veranstalter des Termins bin oder zur Übertragung dieses Termins berechtigt bin</span>
-     </label>
-     <label class="checkbox-label">
-       <input type="checkbox" v-model="confirmLegal" />
-       <span>Ich habe die <router-link to="/rechtliches" target="_blank">AGB</router-link> gelesen und akzeptiert</span>
-     </label>
+    <br/><form><div>Ich bestätige, dass ich Veranstalter des Termins bin oder die ausdrückliche Erlaubnis des Veranstalters zur Weitergabe habe: </div><input type="checkbox" v-model="confirmTerms" style="display: inline-block;"></form>
+    <br/><form><div>Ich bestätige, dass ich die <RouterLink to="/rechtliches">AGBs und Datenschutzhinweise</RouterLink> gelesen habe und akzeptiere: </div><input type="checkbox" v-model="confirmLegal" style="display: inline-block;"></form>
     <div v-if="errorMsg" class="error">{{ errorMsg }}</div>
     <div @click="createAngebot" class="btn">Angebot abgeben</div>
 </div>
@@ -50,6 +44,8 @@
 import iCard from '@/components/iCard.vue';
 import {writeAngebot,login,getProfil,writeProfil} from '@/main';
 import {getAuth} from "firebase/auth"
+import { RouterLink } from 'vue-router';
+import router from '@/router';
 export default {
 name: 'BieteView',
 components:{iCard},
@@ -110,6 +106,7 @@ methods:{
         "category":this.selectedCategory,
         "price":parseFloat(this.price),
         "basePrice":parseFloat(this.basePrice),
+        "fullPrice":parseFloat(this.price)+parseFloat(this.basePrice),
         "more":this.more,"privat":this.privat,"anbieter":{"name":this.profilN,"id":this.user.uid}}
         
         const hasNullEntries = Object.values(angebot).some((value) => value === null|| value === undefined || value === '');
@@ -117,19 +114,22 @@ methods:{
           errorMsg="Bitte füllen Sie alle Felder aus!"
           return
         }
-        if (this.title.length>27) {
-          alert("Titel zu lange!")
+        if (this.title.length>35) {
+          this.errorMsg="Titel zu lang! Maximal 35 Zeichen."
           return
         } 
+        if (this.more.length>1000) {
+          this.errorMsg="Beschreibung zu lang! Maximal 1000 Zeichen. Fügen Sie ggf. einen Link zu weiteren Informationen ein."
+          return
+        }
         if(confirm("Angebot verbindlich abgeben?")===false){return}
         console.log(angebot)
-        try{await writeProfil(this.user.uid,profil)//TODO: nur write, falls Änderung
+        try{await writeProfil(this.user.uid,profil)
             const ref=await writeAngebot(angebot,"angeboten")
-            alert("\nAngebot abgegeben! Überprüfen Sie regelmäßig den Reiter 'Verkauft' (Navigationsleiste)");
-            console.log(ref)
-            console.log("ref",ref.id)
+            alert("\nAngebot abgegeben!")
+            router.push("/meins")
                 
-            }catch(e){alert(e)}
+            }catch(e){console.log(e)}
             
     },
 },async beforeMount(){
@@ -137,8 +137,8 @@ methods:{
     const auth = getAuth();
     console.log(auth.currentUser)
     if (!auth.currentUser) {
-        try{await login(); this.user=auth.currentUser}
-        catch(e){alert("error: ",e)};
+        await login(); 
+        this.user=auth.currentUser
     }else{
         this.user=auth.currentUser
     }
