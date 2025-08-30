@@ -21,7 +21,7 @@
           {{ region }}
         </option>
     </select></form>
-    <br/><form><div style="display: inline-block;">Region (des Termins): 
+    <br/><form><div style="display: inline-block;">Kategorie (des Termins): 
     </div><select v-model="selectedCategory" style="display: inline-block;">
         <option v-for="category in this.categories" :key="category" :value="category">
           {{ category }}
