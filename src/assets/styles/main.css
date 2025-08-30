@@ -193,13 +193,15 @@ margin: 0 auto;
 }
 /* btn styling */
 .btn {
-  
+  flex: 0 0 auto;
+  padding: 6px 12px;
+  border-radius: 6px;
+  width: fit-content;
   border: none;
   font-family: 'Lato';
   font-size: inherit;
   background-color: var(--primary);
-  color: inherit;
-  background: none;
+  color: white;
   cursor: pointer;
   letter-spacing: 1px;
   font-weight: 700;
@@ -207,10 +209,9 @@ margin: 0 auto;
   -webkit-transition: all 0.3s;
   -moz-transition: all 0.3s;
   transition: all 0.3s;
-  padding: 5px;
 }
 .btn:hover{
-  background-color: var(--accent-success);
+  background-color: var(--primary-600);
 }
 /* removed legacy .btn-2 to avoid conflicting styles with the theme */
 .angeboteContainer{
@@ -555,13 +556,6 @@ body{
     max-width: 100%;
 }
 
-.comment-form .btn {
-    flex: 0 0 auto;
-    padding: 6px 12px;
-    border-radius: 6px;
-    min-width: auto;
-}
-
 /* Disabled Button States */
 .btn:disabled,
 .btn-login:disabled {
@@ -655,3 +649,34 @@ body{
   margin-top: 2rem;
 }
 /* Ende der rechtlichen Styles von claude */
+
+/* BieteView specific extensions für searchDiv by claude */
+.form-textarea textarea { 
+  resize: vertical; 
+  min-height: 60px; 
+}
+
+.form-checkbox { 
+  align-items: center; 
+}
+
+.checkbox-inline { 
+  display: flex; 
+  align-items: center; 
+  gap: 0.5rem; 
+  cursor: pointer; 
+  font-weight: normal; 
+}
+
+.checkbox-inline input[type="checkbox"] { 
+  margin: 0; 
+  cursor: pointer; 
+}
+
+.btn.disabled { 
+  opacity: 0.6; 
+  cursor: not-allowed; 
+  transform: none !important; 
+}
+/* ende der einheitlichen Styles von claude*/ 
+
