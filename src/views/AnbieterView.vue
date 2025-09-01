@@ -11,7 +11,12 @@
     </div>
     <!-- Anbieter Content -->
     <div class="anbieter" v-if="anbieter && !loading">
-        <h2>{{ anbieter.name }}</h2>
+        <h2>{{ anbieter.name }}
+            <span title="Verifizierter Anbieter" v-if="anbieter.verified" class="verified-provider">
+                <CheckCircle class="verified-icon" />
+            </span>
+        </h2>
+        
         <div>Id: {{ anbieterId }}</div>
         <div>Hauptsitz: {{ anbieter.hauptsitz }}</div>
         <div>Email: {{ anbieter.email }}</div>
@@ -57,10 +62,11 @@
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { commentAnbieter, getAnbieter, login } from '@/main';
 import Comment from '@/components/Comment.vue';
+import { CheckCircle } from "lucide-vue-next";
 
 export default {
     name: 'AnbieterView',
-    components: { Comment },
+    components: { Comment,CheckCircle },
     data() {
         return {
             // Data States

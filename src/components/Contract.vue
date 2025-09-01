@@ -8,6 +8,13 @@
         </i-card>
     </div>
     <div  class="contract" :class="{verkauft: a.status === 'verkauft' && (inView === 2)}">
+      <span title="Verifiziertes Angebot" v-if="a.verified" >
+        <CheckCircle  
+        class="verified-icon" 
+        style="position: absolute; top: 8px; right: 8px" 
+      />
+      </span>
+      <br/>
       <!-- <img class="cardPic" :src="imageUrl" alt="img" /> -->
       <div class="contractTitle">{{ this.a.title }}</div>
       <div :class="['category-pill', catKey]" title="Kategorie">
@@ -38,18 +45,18 @@
   </template>
 <script>
 /* eslint-disable */
-  import {saveOrder,login, writeAngebot, deleteAngebot, updateAngebot} from '@/main';
+  import {saveOrder,login, writeAngebot, deleteAngebot, updateAngebot, saveOrderSafe} from '@/main';
   import {getAuth} from "firebase/auth";
   import "../assets/carticon.png"
   import router from '@/router';
 import { RouterLink } from 'vue-router';
 import ICard from './iCard.vue'
-import { Calendar, Euro, Repeat, ArrowRight, Info, Hammer, Key as LucideKey, Ticket, Utensils, Tag } from 'lucide-vue-next'
+import { Calendar,CheckCircle, Euro, Repeat, ArrowRight, Info, Hammer, Key as LucideKey, Ticket, Utensils, Tag } from 'lucide-vue-next'
   export default {
     name: 'AngebotTemplate',
     components:{
       ICard,
-      Calendar, Hammer, LucideKey, Ticket, Utensils, Tag
+      Calendar, Hammer, LucideKey, Ticket, Utensils, Tag, CheckCircle
     },
     props: {
       a:Object,
@@ -88,8 +95,14 @@ import { Calendar, Euro, Repeat, ArrowRight, Info, Hammer, Key as LucideKey, Tic
         if(getAuth().currentUser===null){ await login()}
         //  TODO:make angebote laden
         if(confirm("Termin zu angegebenem Preis kaufen?")===true){
-          await saveOrder(this.a,this.a.creator,this.a.id)
-          router.push("/meins")
+          try{
+          const result=await saveOrderSafe(this.a.id)
+          if(result.success){
+            console.log("Kauf erfolgreich!")
+            router.push("/meins")
+          }else{alert(result.error)}}catch(e){
+            alert("Fehler beim Kauf: "+e)
+          }
         }
       },async resell(){
         const user=getAuth().currentUser
@@ -102,12 +115,11 @@ import { Calendar, Euro, Repeat, ArrowRight, Info, Hammer, Key as LucideKey, Tic
           }
         }else{return}
         if(user&&confirm(`Termin zu angegebenem Preis (${newPrice}€) verkaufen?"`)===true){
-          const angebot = { ...this.a, price: Number(normalizedPrice),reseller:this.uid};
+          const angebot = { ...this.a, price: Number(normalizedPrice)};
           if(!angebot.oldBesitzer){angebot.oldBesitzer=[]}
           angebot.oldBesitzer.push(angebot.besitzer)
           if(!angebot.oldPrices){angebot.oldPrices=[]}
           angebot.oldPrices.push(normalizedPrice)
-          delete angebot.besitzer; 
           angebot.status="angeboten"
           await updateAngebot(this.a.id,angebot)
         }

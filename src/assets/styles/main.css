@@ -679,3 +679,8 @@ body{
   transform: none !important; 
 }
 /* ende der einheitlichen Styles von claude*/ 
+.verified-icon {
+  width: 20px;
+  height: 20px;
+  color: var(--accent-success); /* Grün */
+}

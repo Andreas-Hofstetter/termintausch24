@@ -8,7 +8,7 @@ import { firebaseConfig } from './firebase-config.js';
 import { initializeApp } from 'firebase/app'
 import {getDownloadURL, getStorage, listAll, ref,uploadBytes} from "firebase/storage"
 import { GoogleAuthProvider,getAuth, signInWithPopup, onAuthStateChanged, setPersistence, browserLocalPersistence, browserSessionPersistence} from "firebase/auth";
-import { getFirestore,arrayUnion,onSnapshot, arrayRemove,doc,getDoc, addDoc,setDoc, collection, getDocs, FieldPath, query, where, GeoPoint, orderBy,updateDoc, deleteDoc  } from 'firebase/firestore'///lite';
+import { getFirestore,arrayUnion,onSnapshot, arrayRemove,doc,getDoc, addDoc,setDoc, collection, getDocs, FieldPath, query, where, GeoPoint, orderBy,updateDoc, deleteDoc, runTransaction  } from 'firebase/firestore'///lite';
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 
@@ -177,7 +177,7 @@ export async function getAnbieter(anbId){
     return anbSnapshot.data()
   }catch(e){alert(e)}
 }
-export async function saveOrder(angebot,anbieterId, angebotId){ //TODO rewrite
+export async function saveOrder(angebot,anbieterId, angebotId){ //deprecated
   const userId = getUserId()
   if (!userId) {
     alert("Bitte loggen Sie sich zuerst ein!");
@@ -192,6 +192,38 @@ export async function saveOrder(angebot,anbieterId, angebotId){ //TODO rewrite
   }catch(e){
     alert("Fehler beim Speichern")
     console.log(e)
+  }
+}
+export async function saveOrderSafe(angebotId) {
+  const userId = getUserId()
+  if (!userId) {
+    alert("Bitte loggen Sie sich zuerst ein!");
+    return;
+  }
+  try {
+    await runTransaction(db, async (transaction) => {
+      const angebotRef = doc(db, "angebote", angebotId);
+      const angebotDoc = await transaction.get(angebotRef);
+      
+      if (!angebotDoc.exists()) {
+        throw "Angebot nicht gefunden";
+      }
+      
+      const angebot = angebotDoc.data();
+      if (angebot.status !== "angeboten") {
+        throw "Angebot nicht mehr verfügbar";
+      }
+      
+      transaction.update(angebotRef, {
+        status: "verkauft",
+        besitzer: userId,
+      });
+    });
+    
+    return { success: true };
+  } catch (error) {
+    console.error("Transaction error:", error);
+    return { success: false, error: error.toString() };
   }
 }
 export async function commentAnbieter(anbieterId,comment){
