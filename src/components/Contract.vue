@@ -91,10 +91,14 @@ import { Calendar,CheckCircle, Euro, Repeat, ArrowRight, Info, Hammer, Key as Lu
     },
     methods: {
       async saveOrLog(){ 
-        console.log(this.a,this.a.creator,this.a.id)
-        if(getAuth().currentUser===null){ await login()}
+        
+        if(getAuth().currentUser===null){ 
+          if(confirm("Sie sind nicht eingeloggt! Jetzt einloggen?")){
+          await login() 
+          return}
+          }
         //  TODO:make angebote laden
-        if(confirm("Termin zu angegebenem Preis kaufen?")===true){
+        if(confirm("Termin zu angegebenem Preis und Bedingungen (Unter \"Details\" nachzulesen) kaufen?")===true){
           try{
           const result=await saveOrderSafe(this.a.id)
           if(result.success){

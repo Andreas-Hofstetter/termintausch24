@@ -28,25 +28,15 @@ export function getUserId(){
 }
 export async function login(){
   const auth = getAuth(); 
-  console.log(auth.currentUser)
-  if(auth.currentUser===null){
+  if(auth.currentUser){return auth.currentUser}else{
     const provider = new GoogleAuthProvider();
     console.log(provider)
     try{
-    await setPersistence(auth,browserSessionPersistence)
-    await signInWithPopup(auth,provider)
-    .then((re)=>{
-        const credential = GoogleAuthProvider.credentialFromResult(re);
-        console.log(credential)
-        const token = credential.accessToken;
-        console.log(token)
-        // The signed-in user info.
-        const user = re.user;
-        console.log(user)
-        alert("Willkommen, "+user.displayName)
-        return auth.currentUser
-        // IdP data available using getAdditionalUserInfo(result)
-    })}catch(err){alert("Login fehlgeschlagen!");console.log(err)}
+      await setPersistence(auth,browserSessionPersistence)
+      const res=await signInWithPopup(auth,provider)
+      alert("Willkommen, "+user.displayName)
+      return res.user
+    }catch(err){alert(`Login fehlgeschlagen! Fehler: ${err}`);console.log(err)}
   }
 }
 //TODO: allgemeines Problem: angebote nicht aktuell=>gleichzeitige Order möglich!
