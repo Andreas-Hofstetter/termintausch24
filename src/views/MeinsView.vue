@@ -1,48 +1,45 @@
 <template>
 <!-- eslint-disable -->
   <div class="cnt">
-    <div class="modeSwitch" role="tablist" aria-label="Gekauft oder Verkauft">
-      <button role="tab" @click="toggleMode(true)" :class="{modeChosen: showGekauft}">Gekauft</button>
-      <button role="tab" @click="toggleMode(false)" :class="{modeChosen: !showGekauft}">Verkauft</button>
+    <div class="modeSwitch" role="tablist" aria-label="Navigation">
+      <button role="tab" @click="setActiveTab('gekauft')" :class="{modeChosen: activeTab === 'gekauft'}">Gekauft</button>
+      <button role="tab" @click="setActiveTab('verkauft')" :class="{modeChosen: activeTab === 'verkauft'}">Verkauft</button>
+      <button role="tab" @click="setActiveTab('profil')" :class="{modeChosen: activeTab === 'profil'}">Dienstleisterprofil</button>
     </div>
   </div>
 
-  <!-- GEKAUFT VIEW -->
-  <div v-if="showGekauft">
-    <!-- INITIAL LOADING: Firebase prüft noch Auth Status -->
-    <div v-if="authChecking" class="loading">
-      <div>Prüfe Login-Status...</div>
-    </div>
+  <!-- SHARED AUTH CHECKING -->
+  <div v-if="authChecking" class="loading">
+    <div>Prüfe Login-Status...</div>
+  </div>
 
-    <!-- USER NICHT EINGELOGGT -->
-    <div v-else-if="!loggedIn">
-      <div>Nicht eingeloggt!</div>
-      <div class="modeChosen filtern" @click="handleLogin" :disabled="loggingIn">
-        {{ loggingIn ? 'Wird eingeloggt...' : 'Login' }}
-      </div>
+  <!-- SHARED LOGIN PROMPT -->
+  <div v-else-if="!loggedIn">
+    <div>Nicht eingeloggt!</div>
+    <div class="filtern" @click="handleLogin" :disabled="loggingIn">
+      {{ loggingIn ? 'Wird eingeloggt...' : 'Login' }}
     </div>
+  </div>
 
-    <!-- USER EINGELOGGT -->
-    <div v-else>
+  <!-- CONTENT WHEN LOGGED IN -->
+  <div v-else>
+    <!-- GEKAUFT CONTENT -->
+    <div v-if="activeTab === 'gekauft'">
       <h3>Sie haben gekauft:</h3>
       
-      <!-- Loading Gekaufte Items -->
       <div v-if="loadingGekauft" class="loading">
         Lade Ihre gekauften Termine...
       </div>
       
-      <!-- Error State -->
       <div v-if="errorGekauft" class="error">
         {{ errorGekauft }}
         <div class="modeChosen filtern" @click="retryGekauft">Erneut versuchen</div>
       </div>
       
-      <!-- Empty State -->
-      <div v-if="!loadingGekauft && !errorGekauft && gekaufteAngebote.length === 0">
+      <div v-if="!loadingGekauft && !errorGekauft && gekaufteAngebote.length === 0" class="empty-subsection">
         Bisher nichts gekauft.
       </div>
       
-      <!-- Content -->
       <div v-if="!loadingGekauft && !errorGekauft && gekaufteAngebote.length > 0" class="angeboteContainer">
         <Contract 
           v-for="angebot in gekaufteAngebote" 
@@ -53,37 +50,18 @@
         />
       </div>
     </div>
-  </div>
 
-  <!-- VERKAUFT VIEW -->
-  <div v-if="!showGekauft">
-    <!-- INITIAL LOADING: Firebase prüft noch Auth Status -->
-    <div v-if="authChecking" class="loading">
-      <div>Prüfe Login-Status...</div>
-    </div>
-
-    <!-- USER NICHT EINGELOGGT -->
-    <div v-else-if="!loggedIn">
-      <div>Nicht eingeloggt!</div>
-      <div class="modeChosen filtern" @click="handleLogin" :disabled="loggingIn">
-        {{ loggingIn ? 'Wird eingeloggt...' : 'Login' }}
-      </div>
-    </div>
-
-    <!-- USER EINGELOGGT -->
-    <div v-else>
-      <!-- Loading Verkaufte Items -->
+    <!-- VERKAUFT CONTENT -->
+    <div v-if="activeTab === 'verkauft'">
       <div v-if="loadingVerkauft" class="loading">
         Lade Ihre verkauften Termine...
       </div>
       
-      <!-- Error State -->
       <div v-if="errorVerkauft" class="error">
         {{ errorVerkauft }}
         <button @click="retryVerkauft" class="btn-retry">Erneut versuchen</button>
       </div>
       
-      <!-- Content -->
       <div v-if="!loadingVerkauft && !errorVerkauft">
         <h3>Erstellte Angebote (mit aktuellen Preisen):</h3>
         <div v-if="createdAngebote.length === 0" class="empty-subsection">Keine Angebote erstellt</div>
@@ -98,6 +76,12 @@
         </div>
       </div>
     </div>
+
+    <!-- PROFIL CONTENT -->
+    <div v-if="activeTab === 'profil'">
+      <h3>Mein Dienstleisterprofil</h3>
+      <ProfileComponent @saved="handleProfileSaved" />
+    </div>
   </div>
 </template>
 
@@ -105,16 +89,18 @@
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { subscribeToWarenkorb, login, getVerkauft1, getVerkauft2 } from "@/main";
 import Contract from "@/components/Contract.vue";
+import ProfileComponent from "@/components/Profilform.vue";
 
 export default {
   name: 'MeinsView',
   components: {
-    Contract
+    Contract,
+    ProfileComponent
   },
   data() {
     return {
-      // Mode Toggle
-      showGekauft: true,
+      // Tab Control
+      activeTab: 'gekauft',
       
       // Auth States
       authChecking: true,
@@ -142,16 +128,17 @@ export default {
     this.cleanupSubscriptions();
   },
   methods: {
-    toggleMode(showGekauft) {
-      this.showGekauft = showGekauft;
+    setActiveTab(tab) {
+      this.activeTab = tab;
       
       // Daten laden wenn zu jeweiligem Tab gewechselt wird
       if (this.loggedIn) {
-        if (showGekauft && this.gekaufteAngebote.length === 0) {
+        if (tab === 'gekauft' && this.gekaufteAngebote.length === 0) {
           this.setupWarenkorbSubscription();
-        } else if (!showGekauft && this.createdAngebote.length === 0 && this.resoldAngebote.length === 0) {
+        } else if (tab === 'verkauft' && this.createdAngebote.length === 0 && this.resoldAngebote.length === 0) {
           this.loadVerkauftData();
         }
+        // Profil-Tab lädt sich selbst
       }
     },
 
@@ -169,11 +156,12 @@ export default {
           this.loggingIn = false;
           
           // Initial data loading basierend auf aktuellem Tab
-          if (this.showGekauft) {
+          if (this.activeTab === 'gekauft') {
             this.setupWarenkorbSubscription();
-          } else {
+          } else if (this.activeTab === 'verkauft') {
             this.loadVerkauftData();
           }
+          // Profil-Tab lädt sich selbst
         } else {
           this.loggedIn = false;
           this.userId = null;
@@ -251,6 +239,11 @@ export default {
       this.loadVerkauftData();
     },
 
+    // PROFIL METHODS
+    handleProfileSaved(profileData) {
+      console.log('Profil gespeichert:', profileData);
+    },
+
     // SHARED METHODS
     async handleLogin() {
       try {
@@ -270,4 +263,3 @@ export default {
   }
 }
 </script>
-

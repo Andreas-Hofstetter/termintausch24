@@ -9,6 +9,7 @@
       <p>
         {{ text }}
       </p>
+      <slot name="inputs"></slot>
     </section>
 
     <footer class="card-actions">

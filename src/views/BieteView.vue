@@ -1,16 +1,24 @@
 <template>
 <!-- eslint-disable -->
 <p class="msg" v-if="user!=null">Hallo, {{ user.displayName }}!</p>
-<div style=" cursor: pointer;" @click="peClicked = !peClicked">
-  <span class="btn">{{ peClicked ? 'Dienstleisterprofil ausblenden ▲' : 'Dienstleisterprofil ergänzen ▼' }}</span>
+<div class="profile-section" v-if="user!=null">
+  <button @click="showProfileModal = true" class="btn">Dienstleisterprofil bearbeiten</button>
 </div>
-<div class="Profil" v-if="peClicked">
-    <br/>
-    <div>Id: {{ this.user.uid }}</div>
-    <div>Name: <input v-model="profilN"></div>
-    <div>Email: <input v-model="profilE"></div>
-    <div>Hauptsitz: <input v-model="profilH"></div>
-    <div>Telefon: <input v-model="profilT"></div>
+<!-- Profile Modal -->
+<div v-if="showProfileModal" class="modal-overlay" @click="closeProfileModal">
+  <iCard 
+    title="Dienstleisterprofil bearbeiten" 
+    text="" 
+    @close="showProfileModal = false"
+    @click.stop
+  >
+    <template #inputs>
+      <ProfileComponent 
+        :show-cancel="false"
+        @saved="handleProfileSaved"
+      />
+    </template>
+  </iCard>
 </div>
 <div id="bieteWrapper" v-if="user!=null">
     <p>Ich biete..</p>
@@ -46,9 +54,10 @@ import {writeAngebot,login,getProfil,writeProfil} from '@/main';
 import {getAuth} from "firebase/auth"
 import { RouterLink } from 'vue-router';
 import router from '@/router';
+import ProfileComponent from '@/components/Profilform.vue';
 export default {
 name: 'BieteView',
-components:{iCard},
+components:{iCard,ProfileComponent},
 data(){
     const datum = new Date().toISOString().split('T')
     return{
@@ -75,7 +84,8 @@ data(){
     confirmTerms:false,
     confirmLegal:false,
     user:null,
-    errorMsg:null
+    errorMsg:null,
+    showProfileModal: false
     }
 },
 methods:{
@@ -92,11 +102,12 @@ methods:{
             return
         }
         
-        const profil={"email":this.profilE,"name":this.profilN,"telefon":this.profilT,"hauptsitz":this.profilH}
-        if(Object.values(profil).some((value) => value === null|| value === undefined || value === '')){
-          this.errorMsg="Profil unvollständig!"
-          return
+        const savedProfile = await getProfil(this.user.uid);
+        if (!savedProfile || !savedProfile.name || !savedProfile.email || !savedProfile.hauptsitz || !savedProfile.telefon) {
+          this.errorMsg = "Bitte vervollständigen Sie zuerst Ihr Dienstleisterprofil!";
+          return;
         }
+        const profil = savedProfile;
         const angebot=
         {"region":this.selectedRegion,
         "startTimestamp": new Date(`${this.startDate}T${this.startTime}`),

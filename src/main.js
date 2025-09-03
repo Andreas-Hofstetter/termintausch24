@@ -34,8 +34,7 @@ export async function login(){
     try{
       await setPersistence(auth,browserSessionPersistence)
       const res=await signInWithPopup(auth,provider)
-      alert("Willkommen, "+user.displayName)
-      return res.user
+      alert("Willkommen, "+res.user.displayName)
     }catch(err){alert(`Login fehlgeschlagen! Fehler: ${err}`);console.log(err)}
   }
 }
@@ -242,27 +241,22 @@ export async function writeProfil(aid, profil) {
   try {
     // Check if document exists
     const docSnap = await getDoc(aRef);
+    await setDoc(aRef, profil, { merge: true });
     
-    if (docSnap.exists()) {
-      // Document exists - update with merge to preserve comments
-      await updateDoc(aRef, profil);
-    } else {
-      // Document doesn't exist - create new one
-      await setDoc(aRef, profil);
-    }
+    // if (docSnap.exists()) {
+    //   // Document exists - update with merge to preserve comments
+    //   await updateDoc(aRef, profil);
+    // } else {
+    //   // Document doesn't exist - create new one
+    //   await setDoc(aRef, profil);
+    // }
   } catch (e) {
     alert("Fehler beim Speichern des Profils");
     console.log(e);
+    throw e
   }
 }
 
-// async function addGekaufte(angebot,id,uid){
-//   const gkRef=collection(db,"verkauft",uid,"gekaufteAngebote")
-//   const aDoc =doc(gkRef,id)
-//   const docSnap = await setDoc(aDoc,angebot);//TODO: überschreiben verhindern!
-//   console.log(docSnap)
-//   return docSnap
-// }
 async function changeAngebotStatus(aId,newStatus) {
   const aRef= doc(db,"angebote",aId)
   try{
