@@ -1,25 +1,12 @@
 <template>
 <!-- eslint-disable -->
 <p class="msg" v-if="user!=null">Hallo, {{ user.displayName }}!</p>
+
+<!-- Profile Button -->
 <div class="profile-section" v-if="user!=null">
   <button @click="showProfileModal = true" class="btn">Dienstleisterprofil bearbeiten</button>
 </div>
-<!-- Profile Modal -->
-<div v-if="showProfileModal" class="modal-overlay" @click="closeProfileModal">
-  <iCard 
-    title="Dienstleisterprofil bearbeiten" 
-    text="" 
-    @close="showProfileModal = false"
-    @click.stop
-  >
-    <template #inputs>
-      <ProfileComponent 
-        :show-cancel="false"
-        @saved="handleProfileSaved"
-      />
-    </template>
-  </iCard>
-</div>
+
 <div id="bieteWrapper" v-if="user!=null">
     <p>Ich biete..</p>
     <form><div>Terminname: </div><input v-model="title" style="display: inline-block;"></form>
@@ -46,26 +33,44 @@
     <div v-if="errorMsg" class="error">{{ errorMsg }}</div>
     <div @click="createAngebot" class="btn">Angebot abgeben</div>
 </div>
+
+<!-- Profile Modal -->
+<div v-if="showProfileModal" class="modal-overlay" @click="closeProfileModal">
+  <iCard 
+    title="Dienstleisterprofil bearbeiten" 
+    text="" 
+    @close="closeProfileModal"
+    @click.stop
+  >
+    <template #inputs>
+      <ProfileComponent 
+        :show-cancel="false"
+        @saved="handleProfileSaved"
+      />
+    </template>
+  </iCard>
+</div>
 </template>
+
 <script>
 /* eslint-disable */
 import iCard from '@/components/iCard.vue';
+import ProfileComponent from '@/components/Profilform.vue';
 import {writeAngebot,login,getProfil,writeProfil} from '@/main';
 import {getAuth} from "firebase/auth"
 import { RouterLink } from 'vue-router';
 import router from '@/router';
-import ProfileComponent from '@/components/Profilform.vue';
+
 export default {
 name: 'BieteView',
-components:{iCard,ProfileComponent},
+components:{
+    iCard,
+    ProfileComponent
+},
 data(){
     const datum = new Date().toISOString().split('T')
     return{
-    peClicked:false,
-    profilN:null,
-    profilE:null,
-    profilH:null,
-    profilT:null,
+    showProfileModal: false,
     imageUrl:"https://cdn.pixabay.com/photo/2023/06/21/15/07/butterfly-8079524_1280.jpg",
     startDate:  datum[0],
     dauer:  1,
@@ -84,11 +89,19 @@ data(){
     confirmTerms:false,
     confirmLegal:false,
     user:null,
-    errorMsg:null,
-    showProfileModal: false
+    errorMsg:null
     }
 },
 methods:{
+    closeProfileModal() {
+        this.showProfileModal = false;
+    },
+
+    handleProfileSaved() {
+        this.showProfileModal = false;
+        // Profil wurde erfolgreich gespeichert
+    },
+
     async createAngebot(){
         if(!this.startDate || !this.startTime || !this.dauer || !this.title || !this.selectedRegion || !this.selectedCategory || this.price===null || this.price===undefined || !this.more){
             this.errorMsg="Bitte füllen Sie alle Felder aus!"
@@ -102,12 +115,15 @@ methods:{
             return
         }
         
+        // Check if profile exists and is complete
         const savedProfile = await getProfil(this.user.uid);
         if (!savedProfile || !savedProfile.name || !savedProfile.email || !savedProfile.hauptsitz || !savedProfile.telefon) {
-          this.errorMsg = "Bitte vervollständigen Sie zuerst Ihr Dienstleisterprofil!";
-          return;
+            this.errorMsg = "Bitte bearbeiten Sie zuerst Ihr Dienstleisterprofil!";
+            return;
         }
+        
         const profil = savedProfile;
+        
         const angebot=
         {"region":this.selectedRegion,
         "startTimestamp": new Date(`${this.startDate}T${this.startTime}`),
@@ -118,11 +134,11 @@ methods:{
         "price":parseFloat(this.price),
         "basePrice":parseFloat(this.basePrice),
         "fullPrice":parseFloat(this.price)+parseFloat(this.basePrice),
-        "more":this.more,"privat":this.privat,"anbieter":{"name":this.profilN,"id":this.user.uid}}
+        "more":this.more,"privat":this.privat,"anbieter":{"name":profil.name,"id":this.user.uid}}
         
         const hasNullEntries = Object.values(angebot).some((value) => value === null|| value === undefined || value === '');
         if(hasNullEntries){//TO DO: Länge Beschränken!!!
-          errorMsg="Bitte füllen Sie alle Felder aus!"
+          this.errorMsg="Bitte füllen Sie alle Felder aus!"
           return
         }
         if (this.title.length>35) {
@@ -135,31 +151,47 @@ methods:{
         }
         if(confirm("Angebot verbindlich abgeben?")===false){return}
         console.log(angebot)
-        try{await writeProfil(this.user.uid,profil)
+        try{
+            await writeProfil(this.user.uid, profil)
             const ref=await writeAngebot(angebot,"angeboten")
             alert("\nAngebot abgegeben!")
             router.push("/meins")
                 
-            }catch(e){console.log(e)}
+        }catch(e){
+            console.log(e)
+            this.errorMsg = "Fehler beim Speichern des Angebots"
+        }
             
     },
-},async beforeMount(){
-    // onMount falsch! wie kann man funktion vor render aufrufen?
+},
+
+async beforeMount(){
+    // Firebase Auth State prüfen
     const auth = getAuth();
-    console.log(auth.currentUser)
-    if (!auth.currentUser) {
-        await login(); 
-        this.user=auth.currentUser
-    }else{
-        this.user=auth.currentUser
+    
+    if (auth.currentUser) {
+        this.user = auth.currentUser;
+        this.authChecking = false;
+    } else {
+        // Warten auf Auth State Change
+        const unsubscribe = auth.onAuthStateChanged((user) => {
+            this.authChecking = false;
+            this.loggingIn = false;
+            if (user) {
+                this.user = user;
+            }
+            unsubscribe(); // Cleanup after first check
+        });
     }
-    console.log(this.user.uid)
-    const savedProfile=await getProfil(this.user.uid)
-    if(savedProfile){this.profilE=savedProfile.email,this.profilN=savedProfile.name,
-        this.profilH=savedProfile.hauptsitz,this.profilT=savedProfile.telefon}
 }}
 </script>
+
 <style scoped>
+.profile-section {
+    margin-bottom: 1rem;
+    text-align: center;
+}
+
 #bieteWrapper{
     border-radius: 10px;
     padding: 10px;
@@ -171,5 +203,27 @@ methods:{
 }
 #bieteWrapper >form> div{
   display: inline-block;
+}
+
+.error {
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  color: #dc2626;
+  padding: 1rem;
+  border-radius: var(--card-radius);
+  margin: 1rem 0;
+  text-align: center;
+}
+
+/* Modal overlay styling (from main.css) */
+.modal-overlay{
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.85);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  padding: 20px;
 }
 </style>

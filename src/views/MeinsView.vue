@@ -15,6 +15,7 @@
 
   <!-- SHARED LOGIN PROMPT -->
   <div v-else-if="!loggedIn">
+  <br/>
     <div>Nicht eingeloggt!</div>
     <div class="filtern" @click="handleLogin" :disabled="loggingIn">
       {{ loggingIn ? 'Wird eingeloggt...' : 'Login' }}
@@ -78,7 +79,7 @@
     </div>
 
     <!-- PROFIL CONTENT -->
-    <div v-if="activeTab === 'profil'">
+    <div v-if="activeTab === 'profil'" class="wrapper">
       <h3>Mein Dienstleisterprofil</h3>
       <ProfileComponent @saved="handleProfileSaved" />
     </div>
@@ -263,3 +264,11 @@ export default {
   }
 }
 </script>
+<style scoped>
+.wrapper {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 1rem;
+  background-color: var(--bg);
+}
+</style>

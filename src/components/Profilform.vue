@@ -1,30 +1,36 @@
 <template>
   <div class="profile-component">
     <!-- Pure Profile Form -->
-    <div class="profile-form">
-      <div v-if="showUserId && userId" class="form-row">
-        <label>Id:</label>
-        <input :value="userId" readonly />
-      </div>
+    <div v-if="loading" class="loading">Lade Profil...</div>
+    <div v-else class="profile-form">
+      
 
-      <div class="form-row">
+      <div>
         <label>Name: <span class="required">*</span></label>
         <input v-model="profileData.name" :readonly="readonly" placeholder="Ihr Name" />
       </div>
 
-      <div class="form-row">
+      <div>
         <label>Email: <span class="required">*</span></label>
-        <input v-model="profileData.email" type="email" :readonly="readonly" placeholder="Ihre@email.com" />
+        <input v-model="profileData.email" type="email" :readonly="readonly" placeholder="ihre@email.com" />
       </div>
 
-      <div class="form-row">
+      <div>
         <label>Hauptsitz: <span class="required">*</span></label>
         <input v-model="profileData.hauptsitz" :readonly="readonly" placeholder="Stadt/Region" />
       </div>
 
-      <div class="form-row">
+      <div>
         <label>Telefon: <span class="required">*</span></label>
         <input v-model="profileData.telefon" type="tel" :readonly="readonly" placeholder="+49 123 456789" />
+      </div>
+      <div>
+        <label>Verifiziert:</label>
+        <div class="verified-status">
+          <span v-if="this.verified">Verifiziert <CheckCircle class="verified-icon" />
+          </span>
+          <span v-else>Nicht verifiziert <XCircle class="verified-icon" /></span>
+        </div>
       </div>
 
       <div v-if="!readonly" class="form-actions">
@@ -34,7 +40,7 @@
       </div>
 
       <div v-if="error" class="error">{{ error }}</div>
-      <div v-if="loading" class="loading">Speichere...</div>
+      
     </div>
   </div>
 </template>
@@ -42,20 +48,26 @@
 <script>
 import { getProfil, writeProfil } from '@/main';
 import { getAuth } from "firebase/auth";
+import { CheckCircle, XCircle } from 'lucide-vue-next';
 
 export default {
   name: 'ProfileComponent',
   props: {
     readonly: { type: Boolean, default: false },        // Nur anzeigen
-    showUserId: { type: Boolean, default: false },      // User ID anzeigen
     showCancel: { type: Boolean, default: true }        // Abbrechen Button
   },
+  components: {
+    CheckCircle,
+    XCircle
+  },
+  
   emits: ['saved', 'cancelled'],
   data() {
     return {
-      loading: false,
+      loading:true,
       error: null,
       user: null,
+      verified:false,
       profileData: {
         name: '',
         email: '',
@@ -90,24 +102,28 @@ export default {
     async loadProfile() {
       if (!this.user?.uid) return;
       
-      this.loading = true;
       this.error = null;
+      // await new Promise(resolve => setTimeout(resolve, 400));
       
+
       try {
         const savedProfile = await getProfil(this.user.uid);
+        this.loading = false;
         if (savedProfile) {
           this.profileData = {
-            name: savedProfile.name || '',
-            email: savedProfile.email || '',
-            hauptsitz: savedProfile.hauptsitz || '',
-            telefon: savedProfile.telefon || ''
+            name: savedProfile.name,
+            email: savedProfile.email,
+            hauptsitz: savedProfile.hauptsitz,
+            telefon: savedProfile.telefon,
+            
           };
+          console.log(savedProfile.verified)
+          this.verified= savedProfile.verified 
         }
       } catch (e) {
         console.error('Fehler beim Laden des Profils:', e);
         this.error = 'Fehler beim Laden des Profils';
       } finally {
-        this.loading = false;
       }
     },
 
@@ -122,7 +138,6 @@ export default {
         return;
       }
 
-      this.loading = true;
       this.error = null;
 
       try {
@@ -131,20 +146,15 @@ export default {
         this.error = null;
         alert('Profil erfolgreich gespeichert!');
       } catch (e) {
+        console.error('Fehler beim Speichern:', e);
         this.error = 'Fehler beim Speichern des Profils';
       } finally {
-        this.loading = false;
       }
     },
 
     cancel() {
       this.loadProfile(); // Reset
       this.$emit('cancelled');
-    },
-
-    // Public API für externe Verwendung
-    getProfileData() {
-      return { ...this.profileData };
     },
 
     isProfileComplete() {
@@ -194,5 +204,11 @@ export default {
 
 .required {
   color: var(--accent-danger);
+}
+.verified-status {
+  padding: 6px 8px;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 }
 </style>
