@@ -35,6 +35,7 @@ export async function login(){
       await setPersistence(auth,browserSessionPersistence)
       const res=await signInWithPopup(auth,provider)
       alert("Willkommen, "+res.user.displayName)
+      return res.user
     }catch(err){alert(`Login fehlgeschlagen! Fehler: ${err}`);console.log(err)}
   }
 }
@@ -48,6 +49,7 @@ export async function writeAngebot(angebot,status){
   } catch (e) {
     alert("Fehler beim Speichern")
     console.error("Error adding document: ", e);
+    throw e
   }
 } 
 export async function getData(maxPrice,minPrice,region,category,date1,time1,date2,time2) {

@@ -1,5 +1,13 @@
 <template>
 <!-- eslint-disable -->
+
+<div v-if="user==null">
+<br/>
+  <div>Nicht eingeloggt!</div>
+  <div class="filtern" @click="handleLogin" :disabled="loggingIn">
+    {{ loggingIn ? 'Wird eingeloggt...' : 'Login' }}
+  </div>
+</div>
 <p class="msg" v-if="user!=null">Hallo, {{ user.displayName }}!</p>
 
 <!-- Profile Button -->
@@ -31,7 +39,7 @@
     <br/><form><div>Ich bestätige, dass ich Veranstalter des Termins bin oder die ausdrückliche Erlaubnis des Veranstalters zur Weitergabe habe: </div><input type="checkbox" v-model="confirmTerms" style="display: inline-block;"></form>
     <br/><form><div>Ich bestätige, dass ich die <RouterLink to="/rechtliches">AGBs und Datenschutzhinweise</RouterLink> gelesen habe und akzeptiere: </div><input type="checkbox" v-model="confirmLegal" style="display: inline-block;"></form>
     <div v-if="errorMsg" class="error">{{ errorMsg }}</div>
-    <div @click="createAngebot" class="btn">Angebot abgeben</div>
+    <button @click="createAngebot" class="btn">Angebot abgeben</button>
 </div>
 
 <!-- Profile Modal -->
@@ -103,86 +111,80 @@ methods:{
     },
 
     async createAngebot(){
-        if(!this.startDate || !this.startTime || !this.dauer || !this.title || !this.selectedRegion || !this.selectedCategory || this.price===null || this.price===undefined || !this.more){
-            this.errorMsg="Bitte füllen Sie alle Felder aus!"
-            return
-        }
-        if(!this.confirmTerms || !this.confirmLegal){
-            this.errorMsg="Bitte bestätigen Sie alle Bedingungen!"
-          return}
-        if(!this.user){
-            this.errorMsg="Fehler: Kein User gefunden! Bitte neu einloggen!"
-            return
-        }
-        
-        // Check if profile exists and is complete
-        const savedProfile = await getProfil(this.user.uid);
-        if (!savedProfile || !savedProfile.name || !savedProfile.email || !savedProfile.hauptsitz || !savedProfile.telefon) {
-            this.errorMsg = "Bitte bearbeiten Sie zuerst Ihr Dienstleisterprofil!";
-            return;
-        }
-        
-        const profil = savedProfile;
-        
-        const angebot=
-        {"region":this.selectedRegion,
-        "startTimestamp": new Date(`${this.startDate}T${this.startTime}`),
-        "dauer":this.dauer,
-        "title":this.title,
-        "creator":this.user.uid,
-        "category":this.selectedCategory,
-        "price":parseFloat(this.price),
-        "basePrice":parseFloat(this.basePrice),
-        "fullPrice":parseFloat(this.price)+parseFloat(this.basePrice),
-        "more":this.more,"privat":this.privat,"anbieter":{"name":profil.name,"id":this.user.uid}}
-        
-        const hasNullEntries = Object.values(angebot).some((value) => value === null|| value === undefined || value === '');
-        if(hasNullEntries){//TO DO: Länge Beschränken!!!
-          this.errorMsg="Bitte füllen Sie alle Felder aus!"
+      console.log("create Angebot")
+      
+      
+      if(!this.user){
+          this.errorMsg="Fehler: Kein User gefunden! Bitte neu einloggen!"
           return
-        }
-        if (this.title.length>35) {
-          this.errorMsg="Titel zu lang! Maximal 35 Zeichen."
-          return
-        } 
-        if (this.more.length>1000) {
-          this.errorMsg="Beschreibung zu lang! Maximal 1000 Zeichen. Fügen Sie ggf. einen Link zu weiteren Informationen ein."
-          return
-        }
-        if(confirm("Angebot verbindlich abgeben?")===false){return}
-        console.log(angebot)
-        try{
-            await writeProfil(this.user.uid, profil)
-            const ref=await writeAngebot(angebot,"angeboten")
-            alert("\nAngebot abgegeben!")
-            router.push("/meins")
-                
-        }catch(e){
-            console.log(e)
-            this.errorMsg = "Fehler beim Speichern des Angebots"
-        }
+      }
+      
+      // Check if profile exists and is complete
+      const savedProfile = await getProfil(this.user.uid);
+      const profHasNullEntries= Object.values(savedProfile || {}).some((value) => value === null|| value === undefined || value === '');
+      if (profHasNullEntries || !savedProfile) {
+          this.errorMsg = "Bitte vervollständigen Sie zuerst Ihr Dienstleisterprofil!";
+          return;
+      }
+      
+      const angebot=
+      {"region":this.selectedRegion,
+      "startTimestamp": new Date(`${this.startDate}T${this.startTime}`),
+      "dauer":this.dauer,
+      "title":this.title,
+      "creator":this.user.uid,
+      "category":this.selectedCategory,
+      "price":parseFloat(this.price),
+      "basePrice":parseFloat(this.basePrice),
+      "fullPrice":parseFloat(this.price)+parseFloat(this.basePrice),
+      "more":this.more,"privat":this.privat,"anbieter":{"name":savedProfile.name,"id":this.user.uid}}
+      
+      const hasNullEntries = Object.values(angebot).some((value) => value === null|| value === undefined || value === '' || (typeof value === 'number' && isNaN(value)));
+      if(hasNullEntries){//TO DO: Länge Beschränken!!!
+        this.errorMsg="Bitte füllen Sie alle Felder aus!"
+        return
+      }
+      if (this.title.length>35) {
+        this.errorMsg="Titel zu lang! Maximal 35 Zeichen."
+        return
+      } 
+      if (this.more.length>1000) {
+        this.errorMsg="Beschreibung zu lang! Maximal 1000 Zeichen. Fügen Sie ggf. einen Link zu weiteren Informationen ein."
+        return
+      }
+      if(!this.confirmTerms || !this.confirmLegal){
+          this.errorMsg="Bitte bestätigen Sie alle Bedingungen!"
+        return}
+      if(confirm("Angebot verbindlich abgeben?")===false){return}
+      console.log(angebot)
+      try{
+          await writeProfil(this.user.uid, profil)
+          const ref=await writeAngebot(angebot,"angeboten")
+          alert("\nAngebot abgegeben!")
+          router.push("/meins")
+              
+      }catch(e){
+          console.log(e)
+          this.errorMsg = e
+      }
             
     },
+    async handleLogin(){
+      const auth= getAuth()
+      if(auth.currentUser){
+        this.user=auth.currentUser
+      }else{
+        this.user=await login()
+      }
+    
+  },
 },
+
 
 async beforeMount(){
     // Firebase Auth State prüfen
-    const auth = getAuth();
     
-    if (auth.currentUser) {
-        this.user = auth.currentUser;
-        this.authChecking = false;
-    } else {
-        // Warten auf Auth State Change
-        const unsubscribe = auth.onAuthStateChanged((user) => {
-            this.authChecking = false;
-            this.loggingIn = false;
-            if (user) {
-                this.user = user;
-            }
-            unsubscribe(); // Cleanup after first check
-        });
-    }
+    
 }}
 </script>
 
@@ -205,15 +207,6 @@ async beforeMount(){
   display: inline-block;
 }
 
-.error {
-  background: rgba(239, 68, 68, 0.1);
-  border: 1px solid rgba(239, 68, 68, 0.2);
-  color: #dc2626;
-  padding: 1rem;
-  border-radius: var(--card-radius);
-  margin: 1rem 0;
-  text-align: center;
-}
 
 /* Modal overlay styling (from main.css) */
 .modal-overlay{
